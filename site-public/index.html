@@ -1,0 +1,151 @@
+<!doctype html>
+<!--
+  The Long Way Home
+  Created by Sicheng Zheng · Parsons School of Design · 2026
+  © 2026 Sicheng Zheng. All rights reserved.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Long Way Home</title>
+<meta name="description" content="A first-person VR experience: one day in the life of a child worker.">
+<meta name="author" content="Sicheng Zheng">
+<meta name="copyright" content="© 2026 Sicheng Zheng. All rights reserved.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- fonts load without blocking the game (if Google Fonts is slow or blocked, the page still starts) -->
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="style.min.css">
+</head>
+<body data-author="Sicheng Zheng" data-created="2026-10">
+
+<canvas id="scene"></canvas>
+<div id="vignette" aria-hidden="true"></div>
+<div id="fear" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
+
+<!-- ============ TITLE ============ -->
+<section id="title" class="screen show">
+  <header class="t-top">
+    <span></span>
+    <span class="mono dim">Immersive Storytelling · Parsons School of Design · Fall 2026</span>
+  </header>
+
+  <svg class="thread" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M -20 700 C 220 690, 260 560, 420 600 S 640 760, 820 640 S 1080 420, 1180 520 S 1380 700, 1620 610"/>
+  </svg>
+
+  <nav class="menu" aria-label="Main menu">
+    <button class="m-item primary" data-action="begin"><span class="lbl">Begin</span><span class="sub mono">Desktop · mouse &amp; keyboard</span></button>
+    <button class="m-item" data-action="vr" id="btn-vr"><span class="lbl">Enter VR</span><span class="sub mono" id="vr-status">Checking for a headset…</span></button>
+    <button class="m-item" data-action="settings"><span class="lbl">Settings</span></button>
+  </nav>
+
+  <div class="t-block">
+    <p class="kicker mono">A virtual reality experience · about 7 minutes</p>
+    <h1>The Long<br><em>Way Home</em></h1>
+    <p class="logline">One day in the life of a child worker. Sit down — the machines have already started.</p>
+    <dl class="meta mono">
+      <div><dt>SDG</dt><dd>1 No Poverty · 4 Quality Education · 10 Reduced Inequalities</dd></div>
+      <div><dt>Platform</dt><dd>Headset · Desktop</dd></div>
+      <div><dt>Build</dt><dd>v0.4 — the full journey</dd></div>
+    </dl>
+  </div>
+
+  <footer class="t-bl mono">
+    <span class="credit">Created by Sicheng Zheng · © 2026</span>
+    <span class="hp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H4zM17 14h3v6h-3z"/></svg>Best with headphones</span>
+  </footer>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="settings" class="panel" role="dialog" aria-modal="true" aria-labelledby="settings-h">
+  <div class="panel-card">
+    <header><h2 id="settings-h">Settings</h2><button class="x" data-close aria-label="Close">×</button></header>
+    <div id="settings-form" class="form"></div>
+    <footer><button class="ghost mono" id="settings-reset">Reset to defaults</button><button class="solid" data-close>Done</button></footer>
+  </div>
+</section>
+
+<!-- ============ INTRO (headphones) ============ -->
+<section id="intro" class="screen black">
+  <p class="intro-line" id="intro-1">Put on your headphones.</p>
+  <p class="intro-line mono small" id="intro-2">Click anywhere to sit down.</p>
+</section>
+
+<!-- ============ PAUSE ============ -->
+<section id="pause" class="panel">
+  <div class="panel-card narrow center">
+    <p class="mono dim small">Paused</p>
+    <h2>The Long Way Home</h2>
+    <div class="stack">
+      <button class="solid" data-action="resume">Resume</button>
+      <button class="ghost" data-action="settings">Settings</button>
+      <button class="ghost" data-action="restart">Start again</button>
+      <button class="ghost" data-action="quit">Back to title</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="endcard" class="screen black">
+  <div class="end-inner">
+    <p class="end-stat" id="stat-1">In 2024, around <strong>138 million</strong> children were in child labour.</p>
+    <p class="end-stat" id="stat-2"><strong>54 million</strong> of them did hazardous work.</p>
+    <p class="end-stat" id="stat-3">In Asia and the Pacific, <strong>28 million</strong> children still work instead of going to school.</p>
+    <p class="mono small dim end-src" id="stat-src">Source: ILO &amp; UNICEF, <em>Child Labour: Global estimates 2024</em> (June 2025)</p>
+    <div class="end-fin" id="stat-fin">
+      <h2 class="end-line">The Long <em>Way Home</em></h2>
+      <p class="mono small">Created by Sicheng Zheng</p>
+      <p class="mono small dim">Immersive Storytelling · Parsons School of Design · © 2026 Sicheng Zheng. All rights reserved.</p>
+      <p class="mono small dim">Sound: freesound.org (CC0) · door recording by InspectorJ (CC BY 4.0)</p>
+      <div class="row">
+        <button class="solid" data-action="restart">Play again</button>
+        <button class="ghost" data-action="quit">Back to title</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HUD ============ -->
+<div id="hud">
+  <div id="crosshair"></div>
+  <div id="hint" class="mono"></div>
+  <div id="thought"></div>
+  <div id="subtitle" class="mono"></div>
+  <div id="stamina"><i></i></div>
+  <div id="fps" class="mono"></div>
+  <div id="debug" class="mono"></div>
+  <div id="fhint" class="mono"><kbd>F</kbd> Press F to see all controls</div>
+  <div id="controls" class="mono" aria-hidden="true">
+    <h4>Controls <span>F to close</span></h4>
+    <table>
+      <tr><td>W A S D</td><td>Walk</td></tr>
+      <tr><td>Mouse</td><td>Look around</td></tr>
+      <tr><td>Left click</td><td>Interact · hold to sew</td></tr>
+      <tr><td>Shift</td><td>Run (hold)</td></tr>
+      <tr><td>Q</td><td>Look inside the bag (hold)</td></tr>
+      <tr><td>E</td><td>Hold out your hands (when begging)</td></tr>
+      <tr><td>C</td><td>Close your eyes (at home)</td></tr>
+      <tr><td>Esc</td><td>Pause · settings</td></tr>
+      <tr><td>F</td><td>Show / hide this list</td></tr>
+    </table>
+    <h5>Explore mode · for touring the sets</h5>
+    <table>
+      <tr><td>P</td><td>Explore mode on / off</td></tr>
+      <tr><td>1 2 3 4</td><td>Jump: sweatshop · market · nightmare · home</td></tr>
+      <tr><td>Space / Z</td><td>Fly up / down</td></tr>
+      <tr><td>Shift</td><td>Fly faster</td></tr>
+      <tr><td>M</td><td>Nightmare look on / off</td></tr>
+    </table>
+  </div>
+  <div id="explore" class="mono"><b>EXPLORE MODE</b> · P to exit · F for all keys</div>
+</div>
+<div id="eyelids" aria-hidden="true"><i class="lid-top"></i><i class="lid-bot"></i></div>
+<div id="fade"></div>
+<div id="error" class="mono"></div>
+
+<script src="app.min.js" defer></script>
+</body>
+</html>
