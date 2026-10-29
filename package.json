@@ -1,0 +1,19 @@
+{
+  "name": "the-long-way-home",
+  "version": "3.2.0",
+  "private": true,
+  "description": "The Long Way Home V3: a first-person story for desktop browsers and WebXR headsets.",
+  "scripts": {
+    "build": "sh build.sh",
+    "serve": "npx --yes http-server site -p 8080 -c-1",
+    "test:vr": "node dev/vr-test.mjs normal && node dev/vr-test.mjs extra && node dev/vr-quit-test.mjs"
+  },
+  "dependencies": {
+    "three": "0.169.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "playwright": "^1.48.0",
+    "iwer": "^2.7.0"
+  }
+}

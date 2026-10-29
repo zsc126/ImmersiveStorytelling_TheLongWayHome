@@ -1,0 +1,152 @@
+<title>The Long Way Home</title>
+<meta name="description" content="The Long Way Home: one day in the life of a child worker in India. A first-person experience for desktop and VR.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="style.css?v=1793220000">
+<style>html,body{background:#0c0a08}</style>
+<canvas id="scene"></canvas>
+<div id="vignette" aria-hidden="true"></div>
+<div id="fear" aria-hidden="true"></div>
+
+<section id="loading" class="screen show">
+  <p class="kicker mono">Immersive Storytelling · Parsons School of Design</p>
+  <h1>The Long <em>Way Home</em></h1>
+  <div class="load-track"><i id="load-bar"></i></div>
+  <p id="load-msg" class="mono">Starting…</p>
+</section>
+
+<section id="title" class="screen">
+  <header class="t-top">
+    <span></span>
+    <span class="mono dim">Immersive Storytelling · Parsons School of Design · Fall 2026</span>
+  </header>
+  <svg class="thread" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M -20 652 C 100 684, 200 730, 300 726 S 440 672, 520 680 C 580 688, 640 760, 820 640 S 1080 420, 1180 520 S 1380 700, 1620 610"/>
+  </svg>
+  <nav class="menu" aria-label="Main menu">
+    <button class="m-item primary" data-action="begin"><span class="lbl">Begin</span><span class="sub mono">Desktop · mouse &amp; keyboard</span></button>
+    <button class="m-item" data-action="scenes"><span class="lbl">Scenes</span><span class="sub mono">Start from a later scene</span></button>
+    <button class="m-item" data-action="vr" id="vr-btn" hidden><span class="lbl">Enter VR</span><span class="sub mono">Headset · controllers</span></button>
+    <button class="m-item" data-action="settings"><span class="lbl">Settings</span><span class="sub mono">Graphics quality · mouse · sound</span></button>
+  </nav>
+  <div class="t-block">
+    <p class="ver mono">V3</p>
+    <p class="kicker mono">A first-person experience · about 6 minutes</p>
+    <div class="t-wrap"><h1>The Long<br><em>Way Home</em></h1></div>
+  </div>
+  <footer class="t-bl mono">
+    <div class="ed" id="ed">
+      <div class="ed-pick">
+        <ul class="ed-list" id="ed-list" role="listbox" aria-label="Edition">
+          <li><button role="option" data-action="edition" data-ed="extra">Extra</button></li>
+          <li><button role="option" data-action="edition" data-ed="normal" class="on">Normal</button></li>
+        </ul>
+        <button class="ed-btn" data-action="edition-open" aria-haspopup="listbox" aria-expanded="false" aria-controls="ed-list"><span class="ed-k">Edition</span><span id="ed-cur">Normal</span><span class="ed-ar" aria-hidden="true">▴</span></button>
+      </div>
+      <span class="ed-note" id="ed-note">Extra · the last stage has extra content</span>
+    </div>
+    <span class="hp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H4zM17 14h3v6h-3z"/></svg>Best with headphones</span>
+  </footer>
+</section>
+
+<section id="scenes" class="panel" role="dialog" aria-modal="true" aria-labelledby="scenes-h">
+  <div class="panel-card narrow">
+    <header><h2 id="scenes-h">Scenes</h2><button class="x" data-action="close-scenes" aria-label="Close">×</button></header>
+    <p class="mono dim small">Scene 1 is Begin. Each scene starts with everything before it done, in the edition chosen below the menu.</p>
+    <div class="stack scene-list">
+      <button class="ghost scene-btn" data-action="scene" data-n="2"><span class="lbl">Scene 2 · The Market</span><span class="sub mono">The shift is over. Outside the factory door, your bag, three coins.</span></button>
+      <button class="ghost scene-btn" data-action="scene" data-n="3"><span class="lbl">Scene 3 · The Run</span><span class="sub mono">The food is in your bag. The mouth of the lane — the police are behind you.</span></button>
+      <button class="ghost scene-btn" data-action="scene" data-n="4"><span class="lbl">Scene 4 · The Door</span><span class="sub mono">The end of the last lane, in front of your own door.</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="settings" class="panel" role="dialog" aria-modal="true" aria-labelledby="settings-h">
+  <div class="panel-card">
+    <header><h2 id="settings-h">Settings</h2><button class="x" data-action="close-settings" aria-label="Close">×</button></header>
+    <div class="form">
+      <div class="f-row"><label>Graphics quality<span class="f-note">Auto lowers it if the frame rate drops</span></label>
+        <div class="qseg"><button data-q="auto">Auto</button><button data-q="high">High</button><button data-q="medium">Medium</button><button data-q="low">Low</button></div></div>
+      <div class="f-row"><label for="sens">Mouse sensitivity</label><input id="sens" type="range" min="0.3" max="2.5" step="0.05"></div>
+      <div class="f-row"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="1" step="0.01"></div>
+      <div class="f-row"><label for="hints">Show hints</label><input id="hints" type="checkbox"></div>
+    </div>
+    <footer><span></span><button class="solid" data-action="close-settings">Done</button></footer>
+  </div>
+</section>
+
+<section id="intro" class="screen black">
+  <p class="intro-line" id="intro-1">Put on your headphones.</p>
+  <p class="intro-line mono small" id="intro-2">Click anywhere to sit down.</p>
+</section>
+
+<section id="pause" class="panel">
+  <div class="panel-card narrow center">
+    <p class="mono dim small">Paused</p>
+    <h2>The Long Way Home</h2>
+    <p class="mono dim small">Esc to resume</p>
+    <div class="stack">
+      <button class="solid" data-action="resume">Resume</button>
+      <button class="ghost" data-action="settings">Settings</button>
+      <button class="ghost" data-action="restart">Start again</button>
+      <button class="ghost" data-action="quit">Back to title</button>
+    </div>
+  </div>
+</section>
+
+<section id="endcard" class="screen black">
+  <div class="end-inner end-wide">
+    <p class="end-stat" id="stat-0a" hidden>Tomorrow at seven, the machines start again.</p>
+    <p class="end-stat" id="stat-0b" hidden>Nothing has changed.</p>
+    <p class="end-stat" id="stat-1">In 2024, around <strong>138 million</strong> children were in child labour.</p>
+    <p class="end-stat" id="stat-2"><strong>54 million</strong> of them did hazardous work.</p>
+    <p class="end-stat" id="stat-3">In Asia and the Pacific, <strong>28 million</strong> children still work instead of going to school.</p>
+    <p class="mono small dim end-src" id="stat-src">Source: ILO &amp; UNICEF, <em>Child Labour: Global estimates 2024</em> (June 2025)</p>
+    <div class="end-fin" id="stat-fin">
+      <h2 class="end-line">The Long <em>Way Home</em></h2>
+      <p class="mono small dim">Immersive Storytelling · Parsons School of Design</p>
+      <p class="mono small dim">Sound: freesound.org (CC0) · door recording by InspectorJ (CC BY 4.0) · procedural</p>
+      <div class="row">
+        <button class="solid" data-action="restart">Play again</button>
+        <button class="ghost" data-action="quit">Back to title</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="hud">
+  <div id="crosshair"></div>
+  <div id="ring"></div>
+  <div id="label" class="mono"></div>
+  <div id="hint" class="mono"></div>
+  <div id="thought"></div>
+  <div id="subtitle" class="mono"></div>
+  <div id="debug" class="mono"></div>
+  <div id="stamina"><i></i></div>
+  <div id="explore" class="mono">Explore mode · 1–4 jump to a space · P to return</div>
+  <div id="fhint" class="mono"><kbd>F</kbd> Controls</div>
+  <div id="controls" class="mono" aria-hidden="true">
+    <h4>Controls <span>F to close</span></h4>
+    <table>
+      <tr><td>Mouse</td><td>Look around</td></tr>
+      <tr><td>Left click</td><td>Interact · hold to sew</td></tr>
+      <tr><td>W A S D</td><td>Walk</td></tr>
+      <tr><td>Shift</td><td>Run (hold)</td></tr>
+      <tr><td>Q</td><td>Look inside the bag (hold)</td></tr>
+      <tr><td>R</td><td>Extra: hug the bag to hide its light (hold)</td></tr>
+      <tr><td>E</td><td>Hold out your hands (when sitting)</td></tr>
+      <tr><td>C</td><td>Close your eyes (at the end, hold)</td></tr>
+      <tr><td>Esc</td><td>Pause · Esc again to resume</td></tr>
+    </table>
+    <h5>Explore mode</h5>
+    <table>
+      <tr><td>P</td><td>Walk anywhere through walls · P again to return</td></tr>
+      <tr><td>1 – 4</td><td>Jump to the factory, market, nightmare, home</td></tr>
+    </table>
+  </div>
+</div>
+<div id="eyelids" aria-hidden="true"><i class="lid-top"></i><i class="lid-bot"></i></div>
+<div id="fade"></div>
+<div id="error" class="mono"></div>
+<script src="app.js?v=1793220000" defer></script>

@@ -1,98 +1,115 @@
-# Dev log
+# DEVLOG
 
-## v0.4.5 — 2026-10-21 · authorship & protection
-- **Credit:** "Created by Sicheng Zheng · © 2026" on the title screen, and the author plus the copyright line on the end screen.
-- **Hidden marks:** author and copyright metadata in the page, a copyright banner in every source file, a console signature, and a maker's mark scratched into the child's sewing table.
-- **`site-public/`:** a protected build (one minified bundle with a copyright banner). The online version now uses it, so the readable source code is no longer online.
-- **`AUTHORSHIP.md`:** the authorship statement, a timeline, and SHA-256 fingerprints of every file.
+## v3.2 VR — 2026-10-28 · the VR version, checked end to end
+The desktop game is unchanged (same picture, same UI, same controls). Everything below only acts inside a headset,
+except the two fixes marked *desktop*.
+- **Fixed: the game froze in VR at the market.** Pointing a controller at a target that carries a guiding glow (a sprite) threw an error every frame (the controller ray had no camera to test sprites against). The ray now carries the camera.
+- **Fades and eyelids in the headset.** The page's black/white fades and the eyelids (the blink that hides the loop's jump back, waking at home, closing your eyes at the end) are page overlays, so a headset never saw them. A small "veil" around your eyes now mirrors them exactly.
+- **You start where the story puts you, facing the right way,** wherever you stand in your room and whichever way you face (at the machine, at the stall, after being caught…). Walls are tested where your head is; the stick never carries you into a wall and nothing ever pushes you (leaning over a table is fine).
+- **Standing up from the machine** no longer jumps the room by your distance from the play-space centre.
+- **Your shadow and the story read where you look** in a headset (they used to read a fixed direction).
+- **Hints worded for controllers** (point + trigger, hold the trigger, sticks, grips) instead of mouse/keys.
+- **Caption board:** long lines wrap instead of being squeezed; speaker tags; the name of what your ray points at; the sewing progress and the chase's breath as thin bars.
+- **The end card in VR:** the statistics appear one by one in the dark in front of you; then *Pull the trigger to leave VR*. Before, the headset closed and the game jumped straight back to the title, so the statistics were never seen.
+- **Enter VR asks for the headset first** (straight from the click), then loads the sound in the dark. Before, a slow connection could let the click "expire" and the browser refused to open the headset.
+- **Headset menu:** while it is open the story and the sound wait.
+- **Comfort and feel:** the edge of sight darkens a little while the stick moves you; the controller taps when you use something; press a thumbstick to reset your height (after sitting down or standing up); headsets use Medium quality; touchpad controllers (axes 0/1) work as well as thumbsticks; a headset without a floor-level space falls back to a standing one.
+- **Leaving VR mid-game** returns to the title cleanly (the desktop view no longer keeps the headset's turn).
+- *desktop* **Fixed: the end card was hidden under the black fade** (a line that lifts the fade had been swallowed by a code comment), so the statistics never showed on desktop either.
+- *desktop* **Source in step with the build:** `src/` was a little behind the shipped `site/app.js` (own footsteps and the footstep gain); it now rebuilds to exactly the shipped game.
+- **Play it:** `Start The Long Way Home.bat` serves the game on `http://localhost:8080` (PC headsets via Quest Link / Air Link / SteamVR in Chrome or Edge); the GitHub Pages workflow (`docs/github-pages-workflow.yml`, move it to `.github/workflows/pages.yml`) gives the https link standalone headsets need.
+- **Tested without a headset:** `dev/vr-test.mjs` plays the story in an emulated Meta Quest 3 (IWER), using the controllers for the real interactions. See `docs/vr-readiness.md`.
 
-## v0.4.4 — 2026-10-21
-- **"Press F to see all controls" badge:** it stays in the bottom-right during play, slowly and softly pulsing. It disappears once you have opened the controls list with F and closed it again. It replaces the one-time hint.
+## v3.1 — 2026-10-23 · footsteps much quieter, no more hiss and humming
+- Background noise (hiss): the room tone and the street bed are filtered twice (dark, no hiss) and much lower (workshop room tone 0.18 → 0.05, lane 0.35 → 0.15); wind in the nightmare, the light and at home about ⅓ of before.
+- Humming: the motor/fan hum is about ⅓ as loud with far less noise in it; the other machines in the workshop about half; the street through the open door less than half; the nightmare drone ⅓; the machines at the very end less than half.
+- Passers-by in the market: footsteps switched off too (`CROWD_STEPS = 0` at the top of `src/street.js`). The crackling fire recording at the food stall (heard as loud, crackly footsteps) is now very quiet (0.22 → 0.04, and it no longer gets louder as you creep up), and the market crowd recording 0.75 → 0.45.
+- Your own footsteps: switched off completely (`OWN_STEPS = 0` at the top of `src/player.js`; raise it to bring them back).
+- Every footstep now goes through one control, `STEP_GAIN` in `src/audio.js` (0.25, then lowered again to 0.07: all footsteps another ~72% quieter). Each source was turned down too: police in the chase about 12× quieter, the market crowd about 10× quieter (and only within 2 m), the steps passing the house about 12× quieter, and your own bare feet barely audible. The step sound itself is duller and softer, with no hard click.
 
-## v0.4.3 — 2026-10-21
-- **Quieter sweatshop:** the background is about half as loud (other machines, workers talking, room tone, fan, the children outside, the street behind the door), and your own machine is a little quieter. The default volume is now comfortable without touching Settings.
+## v3.0 — 2026-10-22 · play-test feedback (outside tester, 5 min 43 s)
+- **Sewing never stops for the story:** the two daydreams in the workshop (the school, the window) now play *over* the work. You can take the next piece and keep sewing while they run.
+- **The other workers are children:** every worker at a machine (and the girl folding) is a child, at different small sizes, all smaller than you and much smaller than the adults (the supervisor, the carrier). The first time you look at one, the child thinks: "Everyone here is a child like me. Some are younger."
+- **No red line any more:** whatever you need next glows softly (a warm halo and a few drifting motes of light), so you look around and find it. The fabric pile glows too. In the chase the glow waits at the next corner. Hints say "look for the glow".
+- **Click feedback:** every time you use something, a ring ripples out from the crosshair and a soft wooden "tok" plays.
+- **The steal is tense:** once the vendor turns away, the closer you creep to the food the louder and faster your heart beats, the market noise falls away, the sizzling gets louder, the edges of sight darken with each beat (a pulse, not a flash) and the view narrows a little. The vendor shifts as if he might turn round. When you are close: "Don't turn around. Don't turn around…"
+- **Smoother changes between spaces:** fog, light and exposure blend about three times more slowly. The run out of the market already darkens toward the nightmare, and the nightmare picks up from there and takes about 12 s to fully change (6 s before). The police turn into monsters later and more slowly, and the first lightning comes later. Your heartbeat carries over from the market into the nightmare.
+- **Home, relief:** a soft dip to dark instead of a white flash. Your heart is still pounding and slows down and fades over about 8 s, with a long breath out. The lamp's warm light grows and the cold air of the chase warms up. "(the shouting runs past the door… and fades away)" → "They didn't see me. I'm safe."
+- **Home, fixes:** you step up to the table before putting the food down (the hand no longer stretches across the room); you sit down on the floor to eat and can't wander off in the dark; you stand up again afterwards; the unreachable old "rest" code is gone. In the nightmare, "They're not men anymore." can no longer show up after the chase is over.
+- **Words:** thoughts and spoken lines are typed out letter by letter, each letter fading in, in a calmer, smaller sans-serif. Speakers get a small label above their line. Control hints still appear at once. The VR caption board shows the same text.
+- **No credits:** the Team/Credits panel and every "created by" line are gone (title, end card, page headers, code). The title shows **V3**. The sound attribution on the end card stays (the CC BY licence requires it).
+- **Ready for GitHub and VR:** `.gitignore`, `site/.nojekyll`, and a GitHub Pages workflow (`docs/github-pages-workflow.yml`, to be moved to `.github/workflows/`) that publishes `site/` over https so a headset can open it and Enter VR. `npm run build` / `npm run serve`.
 
-## v0.4.2 — 2026-10-21
-- **Awnings and tin roofs:** they no longer look pitch black from below (a little self-light, smaller and higher).
-- **Lane by the factory:** the black circles on the ground (puddles that reflected nothing) are now faint damp patches; the drain is lighter.
-- **End screen:** "Team 1" removed.
+# V2 dev log
 
-## v0.4.1 — 2026-10-21
-- **Title screen:** the sizes now follow the screen's proportions, so it looks the same on any display. The left menu takes about 2/5 of the screen height and is centred; the title block sits inside the bottom-right quarter.
-- **Controls list:** press **F** in game to show a semi-transparent list of all keys in the top-left. Normal play is listed first, explore mode below. A hint about F appears once after you sit down.
+## v2.5.1 — 2026-10-21 (evening)
+- **Scenes (title menu, under Begin):** start from Scene 2 · The Market (outside the factory door, bag and three coins), Scene 3 · The Run (the mouth of the lane, the food in your bag, the police well behind) or Scene 4 · The Door (the end of the last lane: knock in Normal, walk into the light in Extra). Each start was tested: free to move, nothing to clip into, police at a distance.
+- **Both editions end the same way at home:** put the food down, eat together, lie down, close your eyes; the end card says tomorrow at seven nothing has changed. Only the nightmare differs (Extra: the loop, the hide, and the door that opens into the light).
+- **The light (Extra):** the food now flies in from far off to one side and stops right in front of your face (about as far as the sewing machine was): first a full thali from the left, then a mango lassi and a kulfi from the right. Press E (VR: trigger) and both hands reach and close twice; the plate fades and breaks into flakes. Lighter haze (patches, not a fog); pale ghost shirts and kurtas drift and sway through the air.
+- **VR readiness reviewed** (`docs/vr-readiness.md`): every interaction has a headset equivalent; the shadow body follows your head in a headset.
+- **Your shadow is a whole child now:** an invisible full body (it only casts a shadow) walks, runs, sits and drops out when you lie down; it faces where you face. The floating hands no longer cast shadows of their own (no floating head-and-hands shadow). It has no collision, so it can never snag on walls, people or the god-mode jumps.
+- **The workshop light falls off as in V1:** brightest by the window and your table, medium at the supervisor's desk, dim in the middle, a faint glow in the far corner.
+- **Warmer workshop light, as in V1:** brighter orange bulb pools (still dark between them), a warmer dusk sun and fill.
+- **Extra:** hiding from the figure is now **R** (Q stays 'look in the bag'); the ghost machine appears only twice — as you enter the alleys and near the end (the two rows in the loop stay).
+- **The window flicker, found:** the light volume's box started inside the window frame, so its face cut through the jambs and shimmered there; it now starts clear of the frame. The frame is plain dark paint (fine wood grain aliased edge-on), and the volume has no screen dither.
+- **The other children keep working after your shift ends** (hands at the cloth, the cycle goes on, the machines run with them).
+- **No sliver buildings:** the last building of a block takes the leftover width instead of a thin strip.
 
-## v0.4 — 2026-10-21
-- **Explore mode (press P):** fly anywhere through walls to tour the sets. The story pauses while you explore.
-  - 1–4 jump to each space.
-  - Space / Z fly up and down; Shift moves faster.
-  - M switches the nightmare look on and off.
-  - Click the factory door to open or close it.
-  - Press P again to return to where you were.
-- **Bigger text everywhere:** the title menu, the child's thoughts, subtitles, control hints, the stamina bar, and the final statistics.
-- **VR caption board:** in a headset, thoughts and subtitles appear on a panel in front of your eyes.
-- **Nightmare chase:**
-  - The police stay visible right behind you; you hear their boots, whistles and shouting ("Ruko!", "Chor!").
-  - They are slower than you when you run, even out of breath (holding Shift then gives a jog), so they only catch you if you walk or stop.
-  - They stumble in the narrow lanes.
-  - Red fear creeps in at the screen edges when they are close.
-  - Ghost sewing machines appear ahead and dissolve as you reach them, and a ghost of the supervisor waits at the end of a lane ("Same time tomorrow.").
-  - Faint words from the day sit on the walls as easter eggs: 400 PCS (the daily target), Rs 6 / Rs 10, TOMORROW 7 AM, and CHOR (Hindi for "thief").
-  - The last lane before home is lined with tin-sheet shacks, laundry and buckets, as in the Space 3 sketch.
-- **Market:** the buildings now have real depth (roofs and parapets, floor ledges, balconies with laundry, AC units, shop shutters, signboards and awnings), and a dusk sky sits over the streets.
-- **Begging:** footsteps of people walking past.
-- **Ending:** the child's line from the board, "Maybe tomorrow will be better.", comes as the eyes close, then the machines return.
-- **Performance:** identical materials and textures are shared. Fonts load without blocking the game.
+## v2.5 — 2026-10-21 · fixes from the team's play-test
+- **Workshop light, back to V1's mood:** fewer lights — four bare-bulb pools with dark between them and two dead bulbs, a dim tube, V1's dark smoky air. The sun is now a low **dusk** sun with a dusk sky and schoolyard outside. The shadow map covers the whole room, so the hard-edged band of "sun" across the floor is gone. After the third piece, the window light swells gently instead of blowing out.
+- **No more flicker at the window** (title screen and in game): the frame and bars no longer pick up shadow-map acne; the invisible sun-blocking shell no longer shares a plane with the frame; the light shaft uses a fixed dither instead of a per-frame random one.
+- **The finished pieces stay on the table:** the pile on the right was never added to the room (a code comment had swallowed the line).
+- **Hands:** they rest naturally (wrists straight) and only come up when you face the machine; they never stretch after you any more (explore mode, jumps). Explore mode hides them.
+- **Begging, hold E:** two hands held out like a bowl for water — palms up, tipped a little toward each other, close but not touching. The crossed, overlapping fingers came from both hands sharing one position vector (so they landed in the same place); every hand target now has its own.
+- **The other children work like you:** each has a small stool of fabric on the left and a fixed pile (1–5) of finished pieces on the right, and repeats your cycle — reach left, lay the piece under the needle, sew, move it to the pile — at their own pace, so someone is always reaching while another sews. Their feet rest on the treadles (fitted per child, never through the floor).
+- **The supervisor:** his desk is off the back wall and at sitting height; he sits on a wooden chair with a back, rises smoothly to pay you, and sits down again as you turn to go.
+- **Esc** pauses; **Esc again** resumes. Your own footsteps are much quieter. Passers-by in the market step round you instead of walking through you.
+- **Market:** the food stall's price board hangs in front of the tarp (no longer cut off); the ground no longer shimmers where the square meets the lanes.
+- **The lane outside the factory:** V1's dark, dusty dusk again, opening into the warmer market.
+- **The red thread:** muted again, as in V1: dashes drift along it, so it is there and not there, never a bright laser.
+- **Escape route:** every crate and sack in the lanes now sits against a wall, leaving at least 1.8 m clear (checked along the whole route). The fruit cart and two bystanders were moved off the run from the food stall to the lane.
+- **Home (Normal):** the opened door always leads home, even if the frame loop was paused.
+- **Tested by walking:** an automated player held W and steered along the whole route from the food stall to the home door in both editions (no teleports): no blockages. Normal: grabbed, pulled free, knocked three times, home, end card. Extra: loop ×2, hid from the figure, walked into the door, the collapse, the light, home, end card. 0 errors.
+- Workers' pieces and your finished piece travel round the front of the machine, not through it. The chase always lets you move.
 
-## v0.3 — 2026-10-20 · the whole journey
-The full story is playable from start to finish, about 6–8 minutes.
+## v2.4 — 2026-10-21 · Normal nightmare: five lanes, five refusals
+The Normal edition's chase home now builds one refusal per lane (design and references in `docs/nightmare-design.md`). It is about despair more than horror.
+- **Doors:** lit doorways, each with a figure in it; every one slams a tin shutter before you arrive ("Go away!", "We don't want trouble.").
+- **Hands:** adult arms push out of cracks in the wall and claw at your bag. One catches it ("Give it here."); click again and again (VR: pull the trigger again and again) to pull free. Give up and, after 9 s, it takes a coin.
+- **Sky:** the buildings lean in overhead until the sky is a crack, and the light dims. It all stays above head height (VR-safe).
+- **Windows:** every barred window lights up, a child at a machine in each, all sewing in the same rhythm. Halfway down the machines stop and every child turns to look at you; then the lights go out and only their eyes remain.
+- **The last door:** the bulbs die behind you one by one; your own door is shut. Knock three times: nothing, "…Who is it?", then "Ma, it's me!", and it opens. The police slow down at the door so the moment is tense, not unfair.
+- The ghost machines now appear only in Extra (their meaning wasn't clear). Buildings that carry a door, a hand or a window no longer sway, so nothing comes apart.
+- Transitions: leaving a space now stops its sounds and resets it (no leftover white sphere at home); in Extra the house disappears first and a soft light opens where its door was.
 
-- **Space 2, Street & Market:** the lane opens into a sunlit, dusty market square with a crowd, stalls and wires overhead. Three failed attempts follow:
-  1. At the food stall the coins come out of the bag (Rs 6), but a plate is Rs 10.
-  2. You pick up cloth scraps from a heap, and the tailor refuses them.
-  3. You sit with the other children and hold E to hold out your hands; people walk past.
-  Then the vendor turns away, you steal the food, and the police whistle as you run (hold Shift).
-- **Space 3 ★, Nightmare:** a chase through warping alleys. The buildings lean and breathe, eyes glow in the windows, there's lightning, and the police turn into tall dark creatures. The stolen food glows in the bag (it lights your way) and grows heavy. Running uses up breath (the red bar at the bottom). If they catch you, you go back to the last corner. Crates and carts block the way.
-- **Ending, Home:** a glowing door leads into reality: a one-room home with a tin roof, an oil lamp, the mother by the clay stove and the little brother asleep. The police run past outside. You put the food on the table. Hold C to close your eyes; the sewing machines return and the ILO/UNICEF statistics appear.
-- **The child's inner voice** is on-screen italic text and is never spoken. Other people's lines appear as subtitles.
-- **Real sound recordings (CC0)** for the market crowd, workers' chatter, coins, the nightmare drone, whispers, thunder, chase yells, the stove fire, dripping water, wind and the wooden door. Credits are in `site/audio/CREDITS.md`.
-- **Movement:** walk at 2.0 m/s, hold Shift to run at 3.6 m/s, with smooth acceleration, head bob and wall sliding. The frame rate now follows the screen.
-- **Fixes:** flicker by the door (z-fighting) and the flickering desk tube light are gone, and the title text is bigger.
-- **Drag-to-look fallback:** if a browser won't lock the mouse, you can drag to look around instead.
-- **Online copy (private until shared):** https://claude.ai/artifact/94cfbG84661KrwLGsw2vJg
+## v2.3 — 2026-10-21 · the whole journey, two editions
+- **Two editions, one Begin:** the title keeps a single Begin. A small Edition box in the bottom-left corner opens upward to choose **Normal** (default, the V1 story refined) or **Extra** ("the last stage has extra content"). The choice applies to Enter VR too.
+- **Space 2, the lane and the market:** factory wall, lane, market with bunting, food stall, tailor, chai, cart, scrap heap, a crowd of walkers. Beats: count the coins at the stall → scraps → the tailor refuses → beg (hold E / hold the trigger) → steal → run.
+- **Space 3, the nightmare:** police chase along a breadcrumb trail, watchers who turn their heads and vanish when you come close, the child's shadow on the walls growing into the supervisor's ("Same time tomorrow."), ghost machines, walls that rise behind you. Normal: the glowing door takes you straight home.
+- **Extra, the nightmare:** the lane loops (numbers and cloth on the walls, then machines and sewing sound); a figure comes down the lane and you must hold still and hug the bag (hold Q / squeeze) to let it pass. At the home door the street rises away from you in white light (no fall, no drop: the city moves, you stay still).
+- **Extra, the light:** a bright, quiet void — faint sewing, machines drifting near and far, cloth flying past, street food floating just out of reach. Three tries, then it bursts into cloth and your eyes close.
+- **Home:** Normal as in V1 (give the food, rest, close your eyes). Extra: you wake by the door at night with the bag; your mother: "You're late. We waited." Put the food on the table, eat, lie down on your mat, close your eyes. *Tomorrow at seven, the machines start again. Nothing has changed.* Then the statistics.
+- **VR comfort:** no forced falls or big drops, soft white fades instead of flashes, teleports in the loop hidden behind a blink.
+- **Lighter loading:** sounds load on demand (core sounds first), recordings re-encoded mono at 56 kbps.
 
-## v0.2.1 — 2026-10-20 (bug sweep)
-I tested every menu and the full play-through in a real browser with automated clicks: 28 checks, all passing. Fixed:
+## v2.2 — 2026-10-21 · smoother
+- **Cloth no longer clips the machine:** your machine head sits nearer the table's left edge; the finished pile has room on the right.
+- **Lighter to run:** draw calls in the workshop down from ~390 to ~160–260 (plain props merged into vertex-coloured batches; machine parts merged), 12 → 8 lights, sun shadow map only covers the patch the sun reaches, the hover outline pass and ambient occlusion removed, bloom only on High (bulbs have their own halos), default quality Medium. Code bundle 946 KB → 692 KB.
+- **No hairline cracks:** wall panels overlap at corners, floor and ceiling.
 
-- If you were holding the mouse button on the sewing machine when you pressed Esc, the machine kept sewing by itself after you resumed. Releasing is now forced on pause.
-- Pressing Esc during the final fade could open the pause menu on top of the end card.
-- Double-clicking Begin could start the game twice (doubled sounds).
-- "Play again" sometimes didn't re-lock the mouse. It now asks for the lock straight away.
-- Taking the headset off mid-game left the bag attached to the VR hand. It now moves back into the desktop view.
+## v2.1 — 2026-10-21 · people, hands, the V1 door, light
+- **People:** rebuilt in a faceted How to Fish style with normal proportions (adults ~7 heads tall, children ~5.5–6). Each person is a single skinned mesh (one draw call). Head is one sculpted shape (no dented cheeks); tunics are solid (no see-through "apron").
+- **First-person hands:** chunky faceted hands with clean fingers (no knuckle balls or nail plates). The forearm is a separate solid piece aimed at the child's shoulder, so it always enters from the bottom of the screen. Poses: relax, flat, grip, pinch, cup, point. The hands carry the cloth, guide it beside the needle (clear of it), reach for the bag, carry it, hold it open, and push the door.
+- **Door area, V1 layout:** a long plywood counter across the back-right corner; the supervisor stands behind it facing the workshop; four hooks on the right wall beside the door, your bag on the hook nearest the door with three other workers' bags.
+- **Your seat:** your own stool; you sit square to the needle.
+- **Window light:** one ray-marched light volume through the real bars, rails, mullion and board, instead of stacked slices (no sawtooth edges or dark bands).
+- **Flicker fixes:** door leaf overlaps a new frame (no sky showing through cracks); the door light sits inside the room (no sparkling wall); the tube light hums smoothly instead of strobing.
+- **Quieter:** your own footsteps are barely audible.
+- **VR ready:** an Enter VR button appears in headset browsers; controllers become the hands (trigger to use, hold on the machine to sew), left stick walks, right stick snap-turns 30°, words appear on a board in front of you, and the floor height is set so your eyes are at the child's height.
+- **Performance:** sewing-machine parts merged (461 → 322 meshes); fewer real lights.
 
-Checked and working: Settings opens above the pause menu (from the button, Esc and ×); the volume and sensitivity sliders save; Resume, Restart and Back to title; the end card's Play again (the bag goes back on its hook); begin again after quitting; walls and the closed door block you; the 20-second idle reminder.
-
-## v0.2 — 2026-10-20
-Space 1 rebuilt from the Space 1 rough-view sketch; the door now opens onto the start of Space 2.
-
-- **Poorer room:** exposed brick with plaster falling off, damp at the bottom, brick piers, a rusty tin patch on the ceiling, sagging wires and a pipe, bare bulbs on cords, rough plywood tables, mismatched crates and plastic stools, sacks, cardboard boxes, blue drums, and two children on the floor trimming threads.
-- **Window:** now a large gridded window, as in the sketch. Some panes are glass, some broken, some boarded; the panes in front of the child's eyes stay open so the school is visible.
-- **Door:** moved to the right wall (bottom-right on the map sketch). The bag hooks and the supervisor's desk are beside it.
-- **Space 2 entrance:** a narrow lane outside the door, from the Space 2 sketch. Tall patched facades, tangled wires, tarp awnings, laundry, a bicycle against the wall, puddles, a dusk sky. You walk a few metres out, then the end card shows.
-- **Code:** split up so the project can grow: `js/kit.js` (shared builders), `js/spaces/` (one file per space), `WORLD.md` (layout plan). The bag is now shared across spaces.
-- **Fixes:** Settings now opens above the pause menu (it was stuck underneath). Volume and mouse sensitivity are at the top of Settings. The default volume is lower and the machines are quieter. The red highlight is softer.
-
-## v0.1 — 2026-10-20
-First playable build: title screen + Space 1 (The Sweatshop).
-
-- **Title screen:** a live 3D view of the workshop, the title in the bottom-right, Begin / Enter VR / Settings, and a "best with headphones" note.
-- **Settings:** render resolution, frame-rate limit, effects, shadows, field of view, mouse sensitivity, volume, control hints, FPS counter. Settings are remembered in each browser.
-- **Space 1, The Sweatshop**, built from the Miro board:
-  - Seated start at child scale: tables, machines and adults are about 1.35× real size.
-  - Task loop: take fabric from the left pile, hold to sew it through the machine, and the piece folds onto the right pile. Quota is 4 pieces.
-  - Glimpses of school: after piece 2 a chalkboard and notebook fade in (daydream). After piece 3 the barred window brightens and a school bell rings. Looking out the window at any time turns up the children's voices.
-  - Shift-end bell: machines wind down, workers stop and talk, and you stand up.
-  - Red thread wayfinding: a red line on the floor and a soft red glow on one object at a time. If you stand still for 20 seconds, both pulse harder and a hint repeats.
-  - Key object: a faded, patched cloth bag on the hook by the door. You pick it up, the supervisor drops 3 coins into it, and it opens on its own the first time so you see the coins, a pencil stub and a torn notebook page ("When I grow up I will be a teacher."). After that, hold Q or raise it to your chest in VR to look inside.
-  - The door opens into bright light, followed by the end card. Space 2 is next.
-- **Sound:** all sounds are generated by code for now (machines, chatter, children, bells, coins, door, street, footsteps). Recordings dropped into `site/audio/` replace them.
-- **Tested on:** desktop Chrome (full play-through). VR controls are written but **not yet tested on a real headset**.
+## v2.6 — title, credits, the light's grab
+- Title: "The Long Way Home" much larger (bottom-right, ~half the quadrant); "about 6 minutes"; version label "v2.6" sits above the kicker line, right-aligned.
+- New "Team · Credits" button under the Edition picker; opens a translucent panel: Production; Story & Narrative Design — (tbd); Initial Sketches — (tbd); "Made with Claude". Esc closes it (and Scenes).
+- Extra void: a warm shade sphere tones down the lower half (lifts away as the light grows at the end); sky 2.0.
+- Void grab: hands now in world space, apart and staggered (left a little ahead), palms turned toward each other like a cradle, fingers spread, sliding under the plate's rim from both sides.

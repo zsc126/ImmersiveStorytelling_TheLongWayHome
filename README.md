@@ -1,57 +1,82 @@
-# The Long Way Home
+# The Long Way Home — V3
 
-Created by **Sicheng Zheng** · © 2026 Sicheng Zheng. All rights reserved.
+Immersive Storytelling · Parsons School of Design (reference build).
 
-Team 1 · Immersive Storytelling · Parsons School of Design · Fall 2026
-A first-person experience: one day in the life of a child worker in India. Runs in a web browser on desktop (mouse + WASD) and in a VR headset browser (WebXR).
+A first-person experience: one day in the life of a child worker in India, about 7 minutes.
+Space 1 the sweatshop → Space 2 the lane and the market → Space 3 ★ the nightmare chase → home.
 
-## Run it on your computer (Windows)
+Two editions, chosen in the bottom-left corner of the title screen (Normal by default):
+- **Normal** — the V1 story, refined.
+- **Extra** — the last stage has extra content: the looping lane, the hide, the street rising into the light, the void with food out of reach, waking at home at night, eating, lying down, and the morning that will be the same.
+Runs in a desktop browser (mouse + keyboard) and in a VR headset browser (WebXR).
 
-1. Double-click **Start The Long Way Home.bat**.
-2. A black window opens and your browser opens the game at `http://localhost:8080`.
-3. Keep the black window open while you play. Close it to stop.
+## Play it
 
-The page can't be opened by double-clicking `index.html`: browsers block 3D/audio files loaded that way, so it needs the small local server above.
+- **Online:** the published link (claude.ai artifact) runs the desktop version.
+- **On this computer:** double-click **`Start The Long Way Home.bat`**. It serves the `site` folder at
+  `http://localhost:8080` and opens it in your browser (close the black window to stop). Any other local
+  web server works too, e.g. `python -m http.server 8080` inside `site`.
 
-Mac / other: in a terminal, run `python3 -m http.server 8080` inside the `site` folder, then open `http://localhost:8080`.
+## Play it in VR
+
+There is no app to install: the headset opens the game as a web page and **Enter VR** (on the title, under
+Scenes; it only appears where VR is available) takes it into the headset. It needs **controllers** (not hand tracking). WebXR only works over
+`https://` or on `localhost`, so there are two ways in:
+
+1. **Standalone headset (Meta Quest 2/3/Pro, Pico):** put the `site` folder online over https (GitHub Pages
+   — see below — or Netlify Drop: drag the `site` folder onto app.netlify.com/drop). Open the link in the
+   headset's own browser → **Enter VR**.
+2. **Headset tethered to a Windows PC (Quest Link / Air Link, SteamVR, Windows Mixed Reality):** start the
+   headset's PC link first, then double-click `Start The Long Way Home.bat`, open the page in **Chrome or Edge**
+   on the PC → **Enter VR**. (A Quest on USB can also use the PC's server: `adb reverse tcp:8080 tcp:8080`, then
+   `http://localhost:8080` in the Quest browser.)
+
+The Edition picker applies to VR too. In VR the story starts from Scene 1.
+
+## Put it on GitHub (and GitHub Pages for VR)
+
+The folder is ready to be a repository as it is: `.gitignore` leaves out `node_modules/` and `backups/`,
+all paths in `site/` are relative, and `site/.nojekyll` stops Pages from touching the files.
+
+1. `git init`, `git add .`, `git commit -m "V3"`, then push to a new GitHub repository (branch `main`).
+2. Move `docs/github-pages-workflow.yml` to `.github/workflows/pages.yml` (create the two folders), then
+   Repository → Settings → Pages → Source: **GitHub Actions**. The workflow publishes the `site/` folder on every push.
+3. Open the `https://<user>.github.io/<repo>/` link on desktop or in the headset browser → **Enter VR**.
+
+`site/app.js` is already built, so nothing has to be compiled on GitHub. After changing `src/`, run
+`npm install` once and `npm run build`.
+
+## Scenes
+The title menu's **Scenes** starts later in the story: 2 The Market · 3 The Run · 4 The Door (Scene 1 is Begin).
 
 ## Controls
 
 | Desktop | Headset |
 |---|---|
-| Mouse: look · Click: take / interact | Point + trigger or grip |
-| Hold click on the machine: sew | Hold trigger / grip on the machine |
-| W A S D: walk (after you stand up) | Left stick: walk · Right stick: turn |
-| Hold Shift: run | (VR: comes later) |
-| Hold E: hold out your hands (begging) | Hold trigger on the carton |
-| Hold Q: look inside the bag | Raise the bag hand to your chest |
-| Hold C: close your eyes (ending) | Point at the mat + trigger |
-| Esc: pause | — |
+| Mouse: look · Left click: use · hold on the machine to sew | Point the controller (a thin ray appears on anything usable) + trigger · hold the trigger on the machine |
+| Click again and again: pull free when a hand grabs the bag · Click the door: knock | Pull the trigger again and again · point at the door and pull the trigger |
+| W A S D: walk · Shift: run | Left stick: walk (push it all the way to run) · Right stick: turn 30° |
+| Q (hold): look inside the bag · R (hold, Extra): hug the bag and hold still to hide | Squeeze a grip (or lift the bag and look in) · squeeze a grip and hold still |
+| E (hold): hold out your hands (when sitting) · E (the light): grab | Hold the trigger · pull the trigger |
+| C (hold): close your eyes (at the end) | Squeeze both grips |
+| F: controls list · Esc: pause (Esc again to resume) | Headset menu button: the story waits while the menu is open |
+| — | Press a thumbstick: reset your height (after sitting down or standing up) |
+| P: explore mode (walk through walls, 1–4 jump to a space) | — |
 
-**Explore mode:** press **P** in the game to fly around freely (1–4 jump between spaces, Space/Z up/down, Shift fast, M nightmare look, P again to go back).
+In a headset, hints are worded for the controllers, the controllers give a small tap when you use something,
+and the edge of sight darkens a little while the stick moves you (comfort). At the end the statistics appear in
+the dark in front of you; pull the trigger to leave VR (the end card stays on the page).
 
-Test mode: add `?debug` to the address (`http://localhost:8080/?debug`). It shows the current story phase, and pressing **N** skips to the next step.
-
-## Put it online (public link)
-
-See **GITHUB-PAGES.md** for a step-by-step guide (about 5 minutes, free).
-
-## Use it in a VR headset
-
-A headset (e.g. Meta Quest) opens the same page in its own browser, no cable or PC needed. The headset needs an `https://` link, so `localhost` on your laptop won't work there. To get a public link, put the `site` folder online (GitHub Pages, or drag the `site` folder onto app.netlify.com/drop). Then open that link in the headset browser and press **Enter VR**.
+Add `?debug` to the address for the story phase and frame rate; N skips a beat.
 
 ## Folders
 
-- `site/` is the editable source (readable code). Keep it private.
-- `site-public/` is the protected version for sharing: compressed code with a copyright banner. **Upload this one.**
-- `AUTHORSHIP.md` is the record of authorship: the credit, the timeline, and file fingerprints.
-  - `js/spaces/sweatshop.js`: Space 1 (layout, story steps, sounds)
-  - `js/spaces/street.js`: Space 2 (only the lane entrance so far)
-  - `js/kit.js`: shared builders (people, the bag, props)
-  - `js/textures.js`: painted textures (walls, fabric, schoolyard, notebook page)
-  - `js/audio.js`: sound placeholders
-  - `audio/`: real recordings go here (see `audio/README.md`)
-- `tools/` holds the local server script.
-- `backups/` holds a zipped copy of each version.
-- `DEVLOG.md` lists what changed in each version.
-- `WORLD.md` is the map of how the spaces connect.
+- `site/` — the playable build (`index.html`, `app.js`, `style.css`, `audio/`).
+- `src/` — source modules. Rebuild with `npm install` once, then `npm run build` (three@0.169.0 + esbuild).
+  - `main.js` the journey: spaces, light, air, flow · `sweatshop.js` `street.js` `nightmare.js` `void.js` `home.js` the spaces (`void.js` only in Extra) · `lanes.js` the Normal edition's five lanes
+  - `people.js` every person and the first-person hands · `fp.js` hands and the bag · `kit.js` shared builders
+  - `city.js` streets, stalls, painted textures · `tex.js` factory textures · `lights.js` shared light pool
+  - `xr.js` VR · `audio.js` sound (recordings in `site/audio`, placeholders generated)
+- `dev/` — test pages for people and hands; `vr-test.mjs` plays the story in an emulated Quest 3 (see `docs/vr-readiness.md`).
+- `tools/serve.ps1` — the small local web server behind `Start The Long Way Home.bat`.
+- `DEVLOG.md` — what changed. `PLAN.md` — the plan.
