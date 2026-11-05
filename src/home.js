@@ -91,7 +91,8 @@ export function buildHome(ctx) {
   { const lb = new Batcher(); lb.add(G.cyl(0.05, 0.06, 0.06, 10), M(0x8a6a2a, { metalness: 0.6 }), 0, 0.03, 0); lb.build(lamp); }
   const flame = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 5), new THREE.MeshBasicMaterial({ color: new THREE.Color(1, 0.75, 0.35).multiplyScalar(3) })); flame.scale.y = 1.8; flame.position.y = 0.1; lamp.add(flame);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.dot(), color: new THREE.Color(1, 0.6, 0.25).multiplyScalar(0.7), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false })); halo.scale.setScalar(0.5); halo.position.y = 0.1; lamp.add(halo);
-  const lampL = lights.add({ pos: new THREE.Vector3(87.55, 1.65, 13.3), color: 0xffa850, intensity: 0, distance: 7, decay: 1.5, space: 'home', priority: 3 });
+  const lampL = lights.add({ pos: new THREE.Vector3(87.55, 1.65, 13.3), color: 0xff942f, intensity: 0, distance: 7, decay: 1.5, space: 'home', priority: 3 });
+  const windowL = lights.add({ pos: new THREE.Vector3(84.5, 1.75, z0 + 0.2), color: 0x758fb8, intensity: 0, distance: 3.2, decay: 2, space: 'home', priority: 0.7 });
   const stoveL = lights.add({ pos: new THREE.Vector3(87.2, 0.45, 14.4), color: 0xff6a20, intensity: 0, distance: 3.5, decay: 1.5, space: 'home', priority: 2 });
   // a small barred window: night sky
   const win = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.5), new THREE.MeshBasicMaterial({ color: 0x1a2440, fog: false })); win.position.set(84.5, 1.8, z0 + 0.02); root.add(win);
@@ -134,7 +135,7 @@ export function buildHome(ctx) {
   function reset() {
     Object.assign(S, { phase: 'idle', t: 0, idle: 0, holdC: 0, readPage: false, ended: false, relief: 0, calmT: 0, enterFade: undefined });
     meal.visible = false; glowMat.opacity = 0.9; glowDoor.visible = true; doorPivot.visible = false;
-    lampL.intensity = 0; stoveL.intensity = 0; doorGlow.intensity = 0;
+    lampL.intensity = 0; stoveL.intensity = 0; windowL.intensity = 0; doorGlow.intensity = 0;
     mother.rotation.y = Math.PI / 2 + 0.5; mother.userData.look = 0;
     if (eyelids) eyelids.style.setProperty('--lid', '0');
     sibLie(); fadeBlack = 0;
@@ -184,7 +185,9 @@ export function buildHome(ctx) {
     S.t += dt; S.idle += dt;
     const entering = S.enter; S.enter = false;
     player.headWorld(head);
-    const warm = 0.35 + 0.65 * S.relief; lampL.intensity = 4.5 * warm * (1 + 0.05 * Math.sin(t * 9) * Math.sin(t * 3.1)); stoveL.intensity = (1.4 + 0.2 * Math.sin(t * 7)) * warm;
+    // A small cold pool by the barred window keeps the outside present as the lamp settles.
+    windowL.intensity = 1.15 - 0.3 * S.relief;
+    const warm = 0.35 + 0.65 * S.relief; lampL.intensity = 5.8 * warm * (1 + 0.05 * Math.sin(t * 9) * Math.sin(t * 3.1)); stoveL.intensity = (1.8 + 0.2 * Math.sin(t * 7)) * warm;
     if (!extra()) {
       passer.position.set(lerp(66, 96, Math.min(1, S.t / 9)), 1.5, 12.7);
       if (snd.yells) snd.yells.setVolume(Math.max(0, 0.55 * (1 - S.t / 10)));
@@ -280,9 +283,9 @@ export function buildHome(ctx) {
   function atmosphere() {
     // from the cold, tense air you come in with to the warm, still air of the room (S.relief, 0 → 1)
     const r = S.relief || 0;
-    return { fog: new THREE.Color(0x0a0810).lerp(new THREE.Color(0x140d08), r), density: lerp(0.04, 0.03, r), sun: 0, hemi: lerp(0.24, 0.38, r),
+    return { fog: new THREE.Color(0x0a0810).lerp(new THREE.Color(0x140d08), r), density: lerp(0.04, 0.03, r), sun: 0, hemi: lerp(0.3, 0.58, r),
       hemiSky: new THREE.Color(0x4a4a72).lerp(new THREE.Color(0x8a6a5a), r), hemiGround: new THREE.Color(0x1a1418).lerp(new THREE.Color(0x2e1c10), r),
-      sky: 0.15, skyTint: new THREE.Color(0.3, 0.3, 0.45), exposure: lerp(0.9, 1.02, r) };
+      sky: 0.15, skyTint: new THREE.Color(0.3, 0.3, 0.45), exposure: lerp(0.94, 1.08, r) };
   }
   let onEndFn = null;
   return {

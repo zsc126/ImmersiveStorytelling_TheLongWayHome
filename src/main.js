@@ -21,6 +21,8 @@ import { buildNightmare } from './nightmare.js';
 import { buildHome } from './home.js';
 import { buildVoid } from './void.js';
 import { XRRig } from './xr.js';
+import { makeAtmosphere } from './atmosphere.js';
+import { makeSky } from './sky.js';
 
 const $ = s => document.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -121,6 +123,7 @@ renderer.setPixelRatio(pixelRatio());
 renderer.setSize(innerWidth, innerHeight, false);
 
 const scene = new THREE.Scene();
+const atmosphere = makeAtmosphere();
 scene.background = new THREE.Color(0x0b0907);
 scene.fog = new THREE.FogExp2(0x16100b, 0.036);
 const pmrem = new THREE.PMREMGenerator(renderer);
@@ -176,13 +179,9 @@ sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
 Object.assign(sun.shadow.camera, { left: -15, right: 15, top: 15, bottom: -15, near: 1, far: 60 });
 sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.035; sun.shadow.radius = 2;
 scene.add(sun, sun.target);
-const SUN_OFF = new THREE.Vector3(-14, 10, -6);            // low evening sun from the west-southwest
+const SUN_OFF = new THREE.Vector3(14, 20, -6);            // elevated sun visible above the market rooftops
 const hemi = new THREE.HemisphereLight(0xc8a882, 0x3a2a1e, 0.85); scene.add(hemi);
-const skyTex = (() => { const c = document.createElement('canvas'); c.width = 8; c.height = 256; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, '#2c3a5a'); gr.addColorStop(0.32, '#6a6a86'); gr.addColorStop(0.47, '#d89a68'); gr.addColorStop(0.53, '#f4cc94'); gr.addColorStop(1, '#5a4430'); g.fillStyle = gr; g.fillRect(0, 0, 8, 256);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-const skyDome = new THREE.Mesh(new THREE.SphereGeometry(70, 24, 16), new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false }));
-skyDome.renderOrder = -1; skyDome.frustumCulled = false; scene.add(skyDome);
+const sky = makeSky(scene, SUN_OFF);
 
 // the police (they follow you from the market into the nightmare)
 const police = [makePolice(0), makePolice(1)];
@@ -205,6 +204,7 @@ async function build() {
   bagCtl = new BagCtl(camera, bagCloth(), hands); ctx.bagCtl = bagCtl;
   await step(0.3, 'Building the workshop…');
   spaces[0] = buildSweatshop(ctx); built = 1;
+  atmosphere.install(scene);
   ctx.refreshColliders();
   xrRig = new XRRig({ renderer, camera, player, interactor, hands, bagCtl, ui });
   XRRig.supported().then(ok => { const b = $('#vr-btn'); if (b) b.hidden = !ok; });
@@ -214,6 +214,8 @@ async function build() {
   applyQuality(); onResize();
   updateVisibility(true);
   post.setCamera(titleCam); spaces[0].cine(titleCam, 0); renderer.compile(scene, titleCam);
+  // Canvas text in VR must use the same loaded typefaces as the DOM.
+  await Promise.all(['400 40px "Gowun Batang"', '400 72px "Spectral"'].map(font => document.fonts.load(font).catch(() => [])));
   await step(1, 'Ready');
   setTimeout(() => { ui.show('loading', false); ui.show('title', true); setMode('title'); }, 400);
   allBuilt = buildRest();
@@ -224,6 +226,7 @@ async function buildRest() {
   const builders = [buildStreet, buildNightmare, buildVoid, buildHome];
   for (let i = 0; i < builders.length; i++) {
     const sp = builders[i](ctx); spaces[i + 1] = sp; built = i + 2;
+    atmosphere.install(sp.root);
     sp.root.visible = false;
     sp.onEnd(next => onSpaceEnd(next));
     if (sp.setQuality) sp.setQuality(quality);
@@ -285,6 +288,7 @@ function updateAtmosphere(dt, title) {
   const a = spaces[zi] ? spaces[zi].atmosphere(headV.x) : spaces[0].atmosphere();
   // slow, eased blending: moving between spaces never snaps suddenly brighter or darker
   const k = Math.min(1, dt * (title ? 2.5 : 0.9));
+  atmosphere.update(dt, elapsed, ORDER[zi], a.doorWarmth || 0);
   fogTarget.copy(a.fog);
   scene.fog.color.lerp(fogTarget, k); scene.background.copy(scene.fog.color);
   scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, a.density, k);
@@ -293,8 +297,7 @@ function updateAtmosphere(dt, title) {
   hemi.color.lerp(tmpC.copy(a.hemiSky || new THREE.Color(0xc8a882)), k);
   hemi.groundColor.lerp(tmpC.copy(a.hemiGround || new THREE.Color(0x3a2a1e)), k);
   renderer.toneMappingExposure = THREE.MathUtils.lerp(renderer.toneMappingExposure, a.exposure || 1.0, k * 0.7);
-  skyDome.position.copy(title ? titleCam.position : headV);
-  skyDome.material.color.lerp(tmpC.copy(a.skyTint || new THREE.Color(1, 1, 1)).multiplyScalar(a.sky ?? 1), k);
+  sky.update(dt, elapsed, a, title ? titleCam.position : headV);
   // the outdoor sun follows you; its shadow map is snapped to whole texels so edges don't crawl
   const tx = 30 / sun.shadow.mapSize.x, cx = Math.round(headV.x / tx) * tx, cz = Math.round(headV.z / tx) * tx;
   sun.target.position.set(cx, 0, cz); sun.position.set(cx + SUN_OFF.x, SUN_OFF.y, cz + SUN_OFF.z);

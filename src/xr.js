@@ -256,10 +256,10 @@ export class XRRig {
         const lh = Math.round(size * scale * 1.3);
         blocks.push({ lines, font: g.font, color, lh }); total += lines.length * lh + 10;
       };
-      if (label) add('▸ ' + label, '400 # "IBM Plex Mono", ui-monospace, monospace', 24, '#f3ead8');
-      if (thought && thought.text) add(thought.text, '300 # "Work Sans", system-ui, sans-serif', 40, '#f3ead8');
-      if (subtitle && subtitle.text) { if (subtitle.who) add(subtitle.who, '500 # "IBM Plex Mono", ui-monospace, monospace', 20, '#c9a46a', true); add(subtitle.text, '400 # "Work Sans", system-ui, sans-serif', 34, '#e8dcc0'); }
-      if (hint && hint.text) add(hint.text, '400 # "IBM Plex Mono", ui-monospace, monospace', 27, '#d8d0c0');
+      if (label) add('▸ ' + label, '400 # "Gowun Batang", Georgia, serif', 24, '#f3ead8');
+      if (thought && thought.text) add(thought.text, '400 # "Gowun Batang", Georgia, serif', 40, '#f3ead8');
+      if (subtitle && subtitle.text) { if (subtitle.who) add(subtitle.who, '500 # "Gowun Batang", Georgia, serif', 20, '#c9a46a', true); add(subtitle.text, '400 # "Gowun Batang", Georgia, serif', 34, '#e8dcc0'); }
+      if (hint && hint.text) add(hint.text, '400 # "Gowun Batang", Georgia, serif', 27, '#d8d0c0');
       const bars = (prog > 0 ? 1 : 0) + (stam >= 0 ? 1 : 0);
       total += bars * 22;
       if (total <= H - 60) break;
@@ -318,9 +318,9 @@ export class XRRig {
     g.clearRect(0, 0, W, H);
     g.textAlign = 'left'; g.textBaseline = 'middle';
     const STYLE = {
-      stat: { size: 46, fam: '"Instrument Serif", Georgia, serif', color: '#ece4d6', lh: 58, gap: 14 },
-      small: { size: 24, fam: '"IBM Plex Mono", ui-monospace, monospace', color: 'rgba(236,228,214,0.62)', lh: 32, gap: 8 },
-      title: { size: 72, fam: '"Instrument Serif", Georgia, serif', color: '#ece4d6', lh: 84, gap: 14 },
+      stat: { size: 46, fam: '"Spectral", Georgia, serif', color: '#ece4d6', lh: 58, gap: 14 },
+      small: { size: 24, fam: '"Gowun Batang", Georgia, serif', color: 'rgba(236,228,214,0.62)', lh: 32, gap: 8 },
+      title: { size: 72, fam: '"Spectral", Georgia, serif', color: '#ece4d6', lh: 84, gap: 14 },
     };
     // words with their own colour and slant (<strong> is red, <em> italic), wrapped and centred
     const laid = []; let total = 0;
@@ -356,7 +356,7 @@ export class XRRig {
       y += l.st.gap;
     }
     if (this.endReady) {
-      g.globalAlpha = 1; g.textAlign = 'center'; g.font = '400 26px "IBM Plex Mono", ui-monospace, monospace'; g.fillStyle = '#d8d0c0';
+      g.globalAlpha = 1; g.textAlign = 'center'; g.font = '400 26px "Gowun Batang", Georgia, serif'; g.fillStyle = '#d8d0c0';
       g.fillText('Pull the trigger to leave VR', W / 2, y + 44);
     }
     g.globalAlpha = 1;

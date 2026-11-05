@@ -192,7 +192,7 @@ export function buildSweatshop(ctx) {
     const drop = 3.95 - 2.75;
     B.add(G.cyl(0.006, 0.006, drop, 4), wireM, x, 3.95 - drop / 2, z);
     B.add(G.cyl(0.03, 0.035, 0.07, 8), capM, x, 2.78, z);
-    const glass = mesh(new THREE.SphereGeometry(0.05, 12, 8), lit ? bulbGlass : deadGlass, x, 2.7, z, root); glass.castShadow = false;
+    const glass = mesh(new THREE.SphereGeometry(0.05, 12, 8), lit ? bulbGlass.clone() : deadGlass, x, 2.7, z, root); glass.castShadow = false;
     if (lit) { const halo = new THREE.Sprite(haloMat); halo.position.set(x, 2.7, z); halo.scale.setScalar(0.28 + 0.06 * (BULB_I[i] ?? 2)); halo.renderOrder = 4; root.add(halo); }
     const L = lit ? lights.add({ pos: new THREE.Vector3(x, 2.62, z), color: 0xffa050, intensity: BULB_I[i] ?? 2, distance: 7, decay: 1.8, space: 'sweatshop' }) : null;
     // a tin shade on some
@@ -253,7 +253,7 @@ export function buildSweatshop(ctx) {
           float dust = 0.55 + 0.6 * n3(p * 2.2 + vec3(uTime * 0.05, -uTime * 0.02, uTime * 0.03));
           acc += k * dust * exp(-t * 0.28) * smoothstep(0.0, 0.25, p.y) * ds;
         }
-        float a = acc * 0.17 * uK;
+        float a = acc * 0.28 * uK;
         gl_FragColor = vec4(vec3(1.0, 0.7, 0.42) * a, 1.0);
       }`,
   });
@@ -287,7 +287,7 @@ export function buildSweatshop(ctx) {
         // trace back along the sunlight to the window wall: are we inside the beam?
         float t = (p.x - (${wx.toFixed(2)})) / uSun.x; vec3 w = p - uSun * t;
         float inB = step(${WIN.z0.toFixed(2)}, w.z) * step(w.z, ${WIN.z1.toFixed(2)}) * step(${WIN.y0.toFixed(2)}, w.y) * step(w.y, ${WIN.y1.toFixed(2)}) * step(0.0, t);
-        vB = (0.03 + inB * 0.9) * smoothstep(0.35, 0.9, -(modelViewMatrix * vec4(p,1.0)).z);
+        vB = (0.06 + inB * 1.15) * smoothstep(0.35, 0.9, -(modelViewMatrix * vec4(p,1.0)).z);
         vec4 mv = modelViewMatrix * vec4(p,1.0);
         gl_PointSize = min(5.0, (0.004 + seed*0.006) * uPx * 420.0 / -mv.z);
         gl_Position = projectionMatrix * mv;
@@ -695,9 +695,15 @@ export function buildSweatshop(ctx) {
     fans.forEach((f, i) => { f.rotation.y += dt * (2.2 + i * 0.3); });
     cloths.forEach((c, i) => { c.rotation.x = 0.07 * Math.sin(t * 0.9 + i * 1.3); c.rotation.z = 0.03 * Math.sin(t * 0.7 + i); });
     flame.scale.y = 1 + 0.25 * Math.sin(t * 13) * Math.sin(t * 7.3); flameHalo.scale.setScalar(0.17 + 0.02 * Math.sin(t * 11));
-    bulbs.forEach(b => { b.L.intensity = b.base * (1 + 0.035 * Math.sin(t * 2.1 + b.flick) * Math.sin(t * 5.3 + b.flick)); });
+    bulbs.forEach(b => {
+      // Each failing lamp fades independently; keep a light floor and avoid rapid flashes.
+      const dip = Math.pow(Math.max(0, Math.sin(t * 0.72 + b.flick)), 12);
+      const flicker = 0.86 + 0.05 * Math.sin(t * 2.1 + b.flick) - 0.22 * dip;
+      b.L.intensity = b.base * flicker;
+      b.glass.material.emissiveIntensity = 4.2 * flicker;
+    });
     // the tube light stutters now and then
-    const fl = 1 - 0.06 * Math.max(0, Math.sin(t * 0.37)) * (0.5 + 0.5 * Math.sin(t * 9.0));   // a tired, smooth hum — never a strobe
+    const fl = 0.88 - 0.28 * Math.pow(Math.max(0, Math.sin(t * 0.67)), 14);   // a tired, smooth hum — never a strobe
     tube.intensity = 0.55 * fl; tubeGlow.material.emissiveIntensity = 3.5 * fl;
     mHand.rotation.z = -(35 / 60) * Math.PI * 2 - t * 0.0017; hHand.rotation.z = -((6 + 35 / 60) / 12) * Math.PI * 2 - t * 0.00014;
     // kids playing outside
@@ -962,7 +968,7 @@ export function buildSweatshop(ctx) {
   }
 
   function setQuality(q) {
-    dust.visible = q !== 'low'; shaft.visible = true; shaftMat.uniforms.uSteps.value = q === 'high' ? 40 : q === 'medium' ? 34 : 28;   // enough steps to stay smooth without dithering
+    dust.visible = true; dustGeo.setDrawRange(0, q === 'low' ? 320 : q === 'medium' ? 600 : DUST); shaft.visible = true; shaftMat.uniforms.uSteps.value = q === 'high' ? 40 : q === 'medium' ? 34 : 28;   // enough steps to stay smooth without dithering
     sun.shadow.mapSize.setScalar(q === 'high' ? 2048 : q === 'medium' ? 1536 : 1024);
     if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; }
   }
@@ -973,7 +979,7 @@ export function buildSweatshop(ctx) {
     root, update, start, stop, reset, cine, setQuality, name: 'sweatshop', sun,
     zone: { minX: -100 },
     // the factory's air: warm dusty fill, short fog
-    atmosphere() { return { fog: new THREE.Color(0x1d1712), density: 0.05, sun: 0, hemi: 0.36, hemiSky: new THREE.Color(0x8a7458), hemiGround: new THREE.Color(0x1a140f), sky: 0.7, skyTint: new THREE.Color(1.0, 0.6, 0.4), exposure: 1.0 }; },   // V1's air: dark and smoky; dusk outside
+    atmosphere() { return { fog: new THREE.Color(0x1d1712), density: 0.067, sun: 0, hemi: 0.22, hemiSky: new THREE.Color(0x8a7458), hemiGround: new THREE.Color(0x1a140f), sky: 0.7, skyTint: new THREE.Color(1.0, 0.6, 0.4), exposure: 1.0 }; },   // V1's air: dark and smoky; dusk outside
     onEnd(fn) { onEndFn = fn; },
     get phase() { return S.phase; },
     getColliders() { return doorOpen ? colliders : [...colliders, doorCollider]; },

@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>The Long Way Home</title>
 <meta name="description" content="The Long Way Home: one day in the life of a child worker in India. A first-person experience for desktop and VR.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="style.css?v=1793220000">
+<link rel="preload" href="fonts/Spectral-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="fonts/GowunBatang-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="style.css?v=20261105d">
 <style>html,body{background:#0c0a08}</style>
 </head>
 <body>
@@ -17,30 +16,23 @@
 <div id="fear" aria-hidden="true"></div>
 
 <section id="loading" class="screen show">
-  <p class="kicker mono">Immersive Storytelling · Parsons School of Design</p>
   <h1>The Long <em>Way Home</em></h1>
   <div class="load-track"><i id="load-bar"></i></div>
   <p id="load-msg" class="mono">Starting…</p>
 </section>
 
 <section id="title" class="screen">
-  <header class="t-top">
-    <span></span>
-    <span class="mono dim">Immersive Storytelling · Parsons School of Design · Fall 2026</span>
-  </header>
   <svg class="thread" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
     <path d="M -20 652 C 100 684, 200 730, 300 726 S 440 672, 520 680 C 580 688, 640 760, 820 640 S 1080 420, 1180 520 S 1380 700, 1620 610"/>
   </svg>
   <nav class="menu" aria-label="Main menu">
-    <button class="m-item primary" data-action="begin"><span class="lbl">Begin</span><span class="sub mono">Desktop · mouse &amp; keyboard</span></button>
-    <button class="m-item" data-action="scenes"><span class="lbl">Scenes</span><span class="sub mono">Start from a later scene</span></button>
-    <button class="m-item" data-action="vr" id="vr-btn" hidden><span class="lbl">Enter VR</span><span class="sub mono">Headset · controllers</span></button>
-    <button class="m-item" data-action="settings"><span class="lbl">Settings</span><span class="sub mono">Graphics quality · mouse · sound</span></button>
+    <button class="m-item primary" data-action="begin"><span class="lbl">Begin</span><span class="sub">Start the story</span></button>
+    <button class="m-item" data-action="scenes"><span class="lbl">Scenes</span><span class="sub">Choose a scene</span></button>
+    <button class="m-item" data-action="vr" id="vr-btn" hidden><span class="lbl">Enter VR</span><span class="sub">Play with controllers</span></button>
+    <button class="m-item" data-action="settings"><span class="lbl">Settings</span><span class="sub">Sound and graphics</span></button>
   </nav>
   <div class="t-block">
-    <p class="ver mono">V3</p>
-    <p class="kicker mono">A first-person experience · about 6 minutes</p>
-    <div class="t-wrap"><h1>The Long<br><em>Way Home</em></h1></div>
+    <div class="t-wrap"><p class="ver mono">V3</p><h1>The Long<br><em>Way Home</em></h1></div>
   </div>
   <footer class="t-bl mono">
     <div class="ed" id="ed">
@@ -51,9 +43,7 @@
         </ul>
         <button class="ed-btn" data-action="edition-open" aria-haspopup="listbox" aria-expanded="false" aria-controls="ed-list"><span class="ed-k">Edition</span><span id="ed-cur">Normal</span><span class="ed-ar" aria-hidden="true">▴</span></button>
       </div>
-      <span class="ed-note" id="ed-note">Extra · the last stage has extra content</span>
     </div>
-    <span class="hp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H4zM17 14h3v6h-3z"/></svg>Best with headphones</span>
   </footer>
 </section>
 
@@ -156,6 +146,6 @@
 <div id="eyelids" aria-hidden="true"><i class="lid-top"></i><i class="lid-bot"></i></div>
 <div id="fade"></div>
 <div id="error" class="mono"></div>
-<script src="app.js?v=1793220000" defer></script>
+<script src="app.js?v=20261105b" defer></script>
 </body>
 </html>

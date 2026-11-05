@@ -499,11 +499,13 @@ export function buildNightmare(ctx) {
     audio.oneShot('doorWood', { volume: 0.7 });
   }
 
-  function atmosphere() {
+  function atmosphere(x = player.dolly.position.x) {
+    const doorWarmth = ease(clamp((x - 73) / 8, 0, 1)) * (1 - (S.collapse || 0));
     const w = S.warp || 0, f = S.flash || 0, c = S.collapse || 0, loop = S.inLoop ? 1 : 0, dim = 1 - lanes.dim;   // dim: the sky closing, the bulbs dying
-    const fog = new THREE.Color(0xb08a60).lerp(new THREE.Color(0x1c0508), Math.min(1, w * 1.6)).lerp(new THREE.Color(0x9a90c0), f * 0.5).lerp(new THREE.Color(0xf6eedc), c);
+    const fog = new THREE.Color(0xb08a60).lerp(new THREE.Color(0x161d2b), Math.min(1, w * 1.6)).lerp(new THREE.Color(0x9a90c0), f * 0.5).lerp(new THREE.Color(0xf6eedc), c);
     return {
-      fog, density: lerp(lerp(0.026, 0.075, w), 0.2, loop) * (1 - c * 0.7),
+      fog: fog.lerp(new THREE.Color(0x342c28), doorWarmth * 0.5), doorWarmth,
+      density: lerp(lerp(lerp(0.055, 0.11, w), 0.2, loop), 0.05, doorWarmth) * (1 - c * 0.7),
       sun: (lerp(2.2, 0, Math.min(1, w * 2.5)) + f * 2.2) * dim, hemi: (lerp(0.75, 0.2, w) + f * 1.3) * dim + c * 2.5,
       hemiSky: new THREE.Color(0xb8c4d8).lerp(new THREE.Color(0x5a2a6a), w).lerp(new THREE.Color(0xfff2dc), c), hemiGround: new THREE.Color(0x5a4430).lerp(new THREE.Color(0x12040a), w).lerp(new THREE.Color(0xe8d8c0), c),
       sky: lerp(1, 0.18, w) * dim + c * 2.5, exposure: lerp(1.0, 0.85, w) + c * 0.3,

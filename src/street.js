@@ -182,7 +182,7 @@ export function buildStreet(ctx) {
   const DUST = 420, dg = new THREE.BufferGeometry(), dp = new Float32Array(DUST * 3);
   for (let i = 0; i < DUST; i++) { dp[i * 3] = lerp(A.x0 + 2, x1, rand()); dp[i * 3 + 1] = rand() * 4; dp[i * 3 + 2] = lerp(-2, 10, rand()); }
   dg.setAttribute('position', new THREE.BufferAttribute(dp, 3));
-  const dust = new THREE.Points(dg, new THREE.PointsMaterial({ size: 0.045, map: T.dot(), transparent: true, opacity: 0.45, color: 0xffd9a0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const dust = new THREE.Points(dg, new THREE.PointsMaterial({ size: 0.045, map: T.dot(), transparent: true, opacity: 0.6, color: 0xffbd6b, blending: THREE.AdditiveBlending, depthWrite: false }));
   dust.frustumCulled = false; root.add(dust);
 
   // laundry hanging from balconies
@@ -438,19 +438,19 @@ export function buildStreet(ctx) {
       toBeg: 'Sit on the carton with the other children', begging: 'Hold E to hold out your hands', toSteal: 'Take the food from the counter' }[S.phase];
     if (m) hint(m, 5);
   }
-  // air and light: a dim lane opening into a hazy, golden square
+  // Sunlit, dusty market; the narrow approach stays in architectural shade.
   function atmosphere(x) {
     const k = clamp((x - 17) / 5, 0, 1), f = S.flee || 0;
     const a = {
-      // V1's lane: a dark, dusty passage (dusk), opening into the warmer market
-      fog: new THREE.Color(0x3a2a1c).lerp(new THREE.Color(0xb08a60), k), density: lerp(0.045, 0.02, k),
-      sun: lerp(0.45, 2.3, k), hemi: lerp(0.36, 0.85, k), hemiSky: new THREE.Color(0x9a8a90).lerp(new THREE.Color(0xb8b4c8), k), hemiGround: new THREE.Color(0x3a2a1c).lerp(new THREE.Color(0x5a4430), k),
-      sky: lerp(0.7, 1, k), skyTint: new THREE.Color(1.0, 0.72, 0.55), exposure: lerp(0.92, 1.0, k),
+      // Cooler shade in the approach opens into warm daylight at the stalls.
+      fog: new THREE.Color(0x9a7042).lerp(new THREE.Color(0xd5a263), k), density: lerp(0.042, 0.028, k),
+      sun: lerp(1.7, 4.0, k), hemi: lerp(0.5, 0.82, k), hemiSky: new THREE.Color(0xc89864).lerp(new THREE.Color(0xf3ce93), k), hemiGround: new THREE.Color(0x3a2a1c).lerp(new THREE.Color(0x5a4430), k),
+      sky: lerp(0.85, 1.1, k), skyTint: new THREE.Color(1.0, 0.96, 0.87), exposure: lerp(0.98, 1.08, k),
     };
     if (f > 0) {
       // the run darkens toward the nightmare's first moments (its warp ≈ NIGHT_START), so the two meet
       a.fog.lerp(new THREE.Color(0xb08a60).lerp(new THREE.Color(0x1c0508), 0.24), f);
-      a.density = lerp(a.density, 0.033, f); a.sun = lerp(a.sun, 1.4, f); a.hemi = lerp(a.hemi, 0.67, f);
+      a.density = lerp(a.density, 0.055, f); a.sun = lerp(a.sun, 1.4, f); a.hemi = lerp(a.hemi, 0.67, f);
       a.sky = lerp(a.sky, 0.88, f); a.exposure = lerp(a.exposure, 0.97, f);
       a.skyTint.lerp(new THREE.Color(1, 1, 1).lerp(new THREE.Color(0.55, 0.08, 0.12), 0.2), f);
     }
@@ -462,7 +462,7 @@ export function buildStreet(ctx) {
     zone: { minX: 8.4 },
     onEnd(fn) { onEndFn = fn; },
     getColliders() { return colliders; },
-    setQuality(q) { dust.visible = q !== 'low'; },
+    setQuality(q) { dust.visible = true; dg.setDrawRange(0, q === 'low' ? Math.floor(DUST * 0.4) : DUST); },
     get phase() { return S.phase; },
     setXRBeg(v) { S.xrBeg = v; },
     skip() {

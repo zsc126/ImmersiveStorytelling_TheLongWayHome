@@ -10,6 +10,12 @@ Two editions, chosen in the bottom-left corner of the title screen (Normal by de
 - **Extra** — the last stage has extra content: the looping lane, the hide, the street rising into the light, the void with food out of reach, waking at home at night, eating, lying down, and the morning that will be the same.
 Runs in a desktop browser (mouse + keyboard) and in a VR headset browser (WebXR).
 
+## Develop locally
+
+Run `npm install` once, then `npm run dev` and open `http://localhost:8080/?debug`.
+Changes to `src/` rebuild automatically; refresh the browser to see JavaScript, HTML, or CSS changes.
+Use the Scenes menu to preview later scenes. Stop the server with Ctrl+C.
+
 ## Play it
 
 - **Online:** the published link (claude.ai artifact) runs the desktop version.
@@ -80,3 +86,18 @@ Add `?debug` to the address for the story phase and frame rate; N skips a beat.
 - `dev/` — test pages for people and hands; `vr-test.mjs` plays the story in an emulated Quest 3 (see `docs/vr-readiness.md`).
 - `tools/serve.ps1` — the small local web server behind `Start The Long Way Home.bat`.
 - `DEVLOG.md` — what changed. `PLAN.md` — the plan.
+
+## Typography and atmosphere
+
+The playable `site/` build serves Spectral titles and Gowun Batang body text locally, including the
+caption and ending boards in VR. Font licenses are in `site/fonts/`.
+
+`src/atmosphere.js` adds slowly drifting, height-dependent haze to world materials in both eyes,
+without a post-processing pass. The factory keeps its window shafts and floating dust at every
+quality level, with dim, independently fading lamps. The market uses amber sunlight, suspended pollution, and a procedural sky with a sun disk and
+slowly moving clouds (`src/sky.js`); the run uses dense cold fog, thinning and warming toward the door. At home, the warm lamp contrasts with
+a small cold light at the barred window. Atmosphere transitions are eased between spaces.
+
+After rebuilding, serve `site/` on port 8765 and run `node dev/atmosphere-test.mjs` for scene-render
+and font checks in both editions. It writes preview PNGs to `/tmp/tlwh-atmosphere-*`.
+A real headset is still needed to judge comfort, readability, and performance on the target device.
