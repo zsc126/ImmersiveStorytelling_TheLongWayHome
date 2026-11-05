@@ -1,5 +1,5 @@
-// Post-processing: ambient occlusion → interaction outline → bloom → filmic tone map →
-// a grade pass (split-tone, gentle chromatic fringe, vignette, film grain, dream wash).
+// Desktop rendering: optional bloom, output conversion, then color grading and dream effects.
+// WebXR bypasses this pipeline; headset atmosphere must come from world materials and lighting.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -9,7 +9,14 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 
 const GradeShader = {
-  uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uDream: { value: 0 }, uGlow: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) }, uGrain: { value: 1 } },
+  uniforms: {
+    tDiffuse: { value: null },
+    uTime: { value: 0 },
+    uDream: { value: 0 },
+    uGlow: { value: 0 },
+    uRes: { value: new THREE.Vector2(1, 1) },
+    uGrain: { value: 1 },
+  },
   vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
   fragmentShader: `
     uniform sampler2D tDiffuse; uniform float uTime; uniform float uDream; uniform float uGlow; uniform vec2 uRes; uniform float uGrain; varying vec2 vUv;
@@ -47,13 +54,31 @@ const GradeShader = {
 
 export function makePost(renderer, scene, camera, quality) {
   const size = renderer.getDrawingBufferSize(new THREE.Vector2());
-  const rt = new THREE.WebGLRenderTarget(size.x, size.y, { type: THREE.HalfFloatType, samples: quality === 'high' ? 4 : 2 });
+  const rt = new THREE.WebGLRenderTarget(size.x, size.y, {
+    type: THREE.HalfFloatType,
+    samples: quality === 'high' ? 4 : 2,
+  });
   const composer = new EffectComposer(renderer, rt);
   const render = new RenderPass(scene, camera);
   composer.addPass(render);
   const gtao = new GTAOPass(scene, camera, size.x, size.y);
-  gtao.updateGtaoMaterial({ radius: 0.5, distanceExponent: 1.4, thickness: 1.2, scale: 1.0, samples: 12, distanceFallOff: 1, screenSpaceRadius: false });
-  gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+  gtao.updateGtaoMaterial({
+    radius: 0.5,
+    distanceExponent: 1.4,
+    thickness: 1.2,
+    scale: 1.0,
+    samples: 12,
+    distanceFallOff: 1,
+    screenSpaceRadius: false,
+  });
+  gtao.updatePdMaterial({
+    lumaPhi: 10,
+    depthPhi: 2,
+    normalPhi: 3,
+    radius: 6,
+    rings: 2,
+    samples: 12,
+  });
   gtao.blendIntensity = 0.9;
   composer.addPass(gtao);
   // (the hover outline re-rendered the whole scene every frame; the label + crosshair now carry it)
@@ -65,16 +90,30 @@ export function makePost(renderer, scene, camera, quality) {
   composer.addPass(grade);
 
   const api = {
-    composer, outline, bloom, gtao, grade, dream: 0, glow: 0,
-    setCamera(cam) { render.camera = cam; gtao.camera = cam; },
+    composer,
+    outline,
+    bloom,
+    gtao,
+    grade,
+    dream: 0,
+    glow: 0,
+    setCamera(cam) {
+      render.camera = cam;
+      gtao.camera = cam;
+    },
     setQuality(q) {
-      gtao.enabled = false;            // ambient occlusion is too costly for mid-range machines and headsets
-      bloom.enabled = q === 'high';    // bulbs have their own halos, so medium/low look fine without bloom
+      gtao.enabled = false; // ambient occlusion is too costly for mid-range machines and headsets
+      bloom.enabled = q === 'high'; // bulbs have their own halos, so medium/low look fine without bloom
       grade.uniforms.uGrain.value = 1;
     },
-    setSize(w, h) { composer.setSize(w, h); grade.uniforms.uRes.value.set(w, h); },
+    setSize(w, h) {
+      composer.setSize(w, h);
+      grade.uniforms.uRes.value.set(w, h);
+    },
     render(t) {
-      grade.uniforms.uTime.value = t; grade.uniforms.uDream.value = api.dream; grade.uniforms.uGlow.value = api.glow;
+      grade.uniforms.uTime.value = t;
+      grade.uniforms.uDream.value = api.dream;
+      grade.uniforms.uGlow.value = api.glow;
       bloom.strength = 0.45 + api.dream * 0.6 + api.glow * 0.5;
       composer.render();
     },

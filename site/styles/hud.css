@@ -1,0 +1,599 @@
+/* In-game captions, interaction feedback, and SVG thread progress indicators.
+   The caption stack reserves vertical space so thoughts, dialogue, and hints cannot collide. */
+
+.intro-line {
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+#intro-1 {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4vw, 52px);
+}
+
+#intro-2 {
+  color: var(--paper-dim);
+}
+
+#intro .intro-line.on {
+  opacity: 1;
+}
+
+#intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  display: none;
+}
+
+body.playing #hud {
+  display: block;
+}
+
+#crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: #ece4d68c;
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+
+#crosshair.hot {
+  transform: scale(2.2);
+  background: var(--thread);
+}
+
+#hint {
+  position: absolute;
+  left: 50%;
+  bottom: 7vh;
+  transform: translate(-50%);
+  font-size: clamp(16px, 1.25vw, 22px);
+  padding: 8px 16px;
+  color: #d8d0c0;
+  background: #08060580;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+#hint.on {
+  opacity: 1;
+}
+
+#fps {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  font-size: 14px;
+  color: var(--paper-dim);
+}
+
+#debug {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  font-size: 11px;
+  color: var(--dust);
+  text-align: right;
+  white-space: pre;
+}
+
+#thought {
+  position: absolute;
+  left: 50%;
+  bottom: 19vh;
+  transform: translate(-50%);
+  width: min(78vw, 820px);
+  text-align: center;
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: clamp(19px, 1.55vw, 27px);
+  line-height: 1.45;
+  letter-spacing: 0.015em;
+  color: #f3ead8;
+  text-shadow:
+    0 1px 14px rgba(0, 0, 0, 0.95),
+    0 0 2px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+#thought.on {
+  opacity: 1;
+}
+
+#subtitle {
+  position: absolute;
+  left: 50%;
+  bottom: 12vh;
+  transform: translate(-50%);
+  max-width: min(86vw, 860px);
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: clamp(16px, 1.25vw, 21px);
+  line-height: 1.4;
+  padding: 8px 16px;
+  background: #08060599;
+  color: #e8dcc0;
+  opacity: 0;
+  transition: opacity 0.5s;
+  text-align: center;
+}
+
+#subtitle.on {
+  opacity: 1;
+}
+
+#stamina {
+  position: absolute;
+
+  margin-left: -130px;
+
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+#stamina.on {
+  opacity: 1;
+}
+
+#stamina i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--thread);
+  transform-origin: left;
+}
+
+#fear {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.25s linear;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 45%,
+    rgba(120, 0, 0, 0.55) 80%,
+    rgba(40, 0, 0, 0.95) 100%
+  );
+}
+
+#explore {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translate(-50%);
+  font-size: 15px;
+  padding: 8px 16px;
+  background: #d23a2cd9;
+  color: #fff;
+  display: none;
+  white-space: nowrap;
+}
+
+body.exploring #explore {
+  display: block;
+}
+
+#controls {
+  position: absolute;
+  left: max(16px, 1.5vw);
+  top: max(16px, 2vh);
+  width: min(540px, 92vw);
+  padding: 16px 20px 18px;
+  background: #0a08069e;
+  border: 1px solid rgba(236, 228, 214, 0.18);
+  backdrop-filter: blur(4px);
+  color: #f3ead8;
+  font-size: clamp(14px, 1.05vw, 18px);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+  pointer-events: none;
+}
+
+#controls.on {
+  opacity: 1;
+  transform: none;
+}
+
+#controls h4 {
+  margin: 0 0 10px;
+  font-size: 1.1em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+#controls h4 span {
+  font-size: 0.75em;
+  color: #ece4d68c;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+#controls h5 {
+  margin: 16px 0 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(236, 228, 214, 0.18);
+  font-size: 0.85em;
+  font-weight: 500;
+  color: var(--dust);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#controls table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#controls td {
+  padding: 4px 0;
+  vertical-align: top;
+}
+
+#controls td:first-child {
+  width: 28%;
+  color: #fff;
+  font-weight: 500;
+}
+
+#controls td:last-child {
+  color: #f3ead8d9;
+}
+
+#fhint {
+  position: absolute;
+  right: max(16px, 1.5vw);
+  bottom: max(16px, 2.5vh);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(13px, 0.95vw, 17px);
+  color: #f3ead8;
+  padding: 8px 14px;
+  background: #0a080673;
+  border: 1px solid rgba(236, 228, 214, 0.2);
+  animation: fpulse 2.8s ease-in-out infinite;
+}
+
+#fhint kbd {
+  font-family: var(--mono);
+  font-size: 0.95em;
+  padding: 2px 8px;
+  border: 1px solid rgba(236, 228, 214, 0.6);
+  border-radius: 3px;
+}
+
+#fhint.gone {
+  display: none;
+}
+
+@keyframes fpulse {
+  0%,
+  to {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #fhint {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+#label {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 22px);
+  transform: translate(-50%);
+
+  color: #f3ead8;
+  text-shadow: 0 1px 6px #000;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+#label.on {
+  opacity: 0.9;
+}
+
+#ring {
+  position: absolute;
+
+  opacity: 0;
+  transition: opacity 0.2s;
+  --k: 0;
+}
+
+#ring.on {
+  opacity: 0.9;
+}
+
+#debug {
+  display: block;
+}
+
+#thought i,
+#subtitle i {
+  font-style: normal;
+  animation: chIn 0.32s ease both;
+}
+
+@keyframes chIn {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+#subtitle .who {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.62em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  margin-bottom: 2px;
+}
+
+#subtitle .say {
+  white-space: normal;
+}
+
+#crosshair:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid #f3e6cc;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.2);
+  pointer-events: none;
+}
+
+#crosshair.tap:after {
+  animation: tap 0.45s ease-out;
+}
+
+@keyframes tap {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+#fear.dark {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 38%,
+    rgba(10, 4, 2, 0.6) 72%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  transition: opacity 0.08s linear;
+}
+
+#hint {
+  white-space: normal;
+  text-align: center;
+  max-width: 86vw;
+  width: max-content;
+  line-height: 1.5;
+}
+
+#thought,
+#subtitle {
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+#intro-2 {
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1.5;
+  margin-top: 24px;
+  padding: 0 24px;
+}
+
+#caption-stack {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(72px, 9vh, 90px);
+  transform: translateX(-50%);
+  width: min(900px, 90vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+#caption-stack #thought,
+#caption-stack #subtitle,
+#caption-stack #hint {
+  position: static;
+  transform: none;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  line-height: 1.5;
+  white-space: normal;
+}
+
+#caption-stack > div:not(.on) {
+  display: none;
+}
+
+#caption-stack #thought {
+  font-size: clamp(23px, 1.8vw, 30px);
+  padding: 10px 20px;
+  color: #f3ead8;
+  background: transparent;
+  text-shadow:
+    0 2px 6px #000,
+    0 0 18px rgba(0, 0, 0, 0.95);
+  border: 0;
+  border-radius: 0;
+}
+
+#thought .say,
+#thought .say i {
+  font-style: italic;
+}
+
+#caption-stack .who {
+  display: block;
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-style: normal;
+}
+
+#thought .who {
+  color: #b9cadf;
+}
+
+#caption-stack #subtitle {
+  font-size: clamp(23px, 1.8vw, 30px);
+  padding: 12px 20px;
+  background: rgba(9, 7, 4, 0.88);
+  color: #fff4df;
+  border-left: 3px solid #d2a46a;
+  border-radius: 4px;
+}
+
+#subtitle .who {
+  color: #e3b77c;
+}
+
+#caption-stack #hint {
+  font-size: clamp(20px, 1.5vw, 25px);
+  padding: 10px 18px;
+  background: rgba(8, 6, 5, 0.85);
+  color: #f3ead8;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+#label {
+  font-size: clamp(17px, 1.3vw, 21px);
+}
+
+@media (max-height: 600px) {
+  #caption-stack {
+    bottom: 64px;
+    gap: 8px;
+  }
+  #caption-stack #thought,
+  #caption-stack #subtitle {
+    font-size: 20px;
+    padding: 6px 14px;
+  }
+  #caption-stack #hint {
+    font-size: 20px;
+    padding: 6px 14px;
+  }
+  #caption-stack .who {
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+}
+
+.thread-progress {
+  --progress: 0;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.thread-progress use {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.thread-track {
+  stroke: rgba(210, 58, 44, 0.2);
+  stroke-width: 2;
+}
+
+.thread-fill {
+  stroke: var(--thread);
+  stroke-width: 2.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--progress));
+  transition: stroke-dashoffset 0.16s linear;
+  filter: drop-shadow(0 0 3px rgba(210, 58, 44, 0.25));
+}
+
+#ring {
+  left: 50%;
+  top: calc(50% + 44px);
+  width: 160px;
+  height: auto;
+  aspect-ratio: 1656/380;
+  margin: 0;
+  transform: translateX(-50%);
+  border-radius: 0;
+  background: none;
+  mask: none;
+  -webkit-mask: none;
+}
+
+#stamina {
+  left: 50%;
+  bottom: 12px;
+  width: 220px;
+  height: auto;
+  aspect-ratio: 1656/380;
+  margin: 0;
+  transform: translateX(-50%);
+  background: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thread-fill {
+    transition: none;
+  }
+}

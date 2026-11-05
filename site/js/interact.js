@@ -11,17 +11,17 @@ export class Interactor {
     this.items = [];
     this.ray = new THREE.Raycaster();
     this.ray.far = 2.6;
-    this.hover = null;          // desktop hover
+    this.hover = null; // desktop hover
     this.vrHover = [null, null];
-    this.active = null;         // what the story wants you to touch next
-    this.urgency = 1;           // grows when the player stands still too long
-    this.holding = new Map();   // source -> item
+    this.active = null; // what the story wants you to touch next
+    this.urgency = 1; // grows when the player stands still too long
+    this.holding = new Map(); // source -> item
   }
 
   add(object, def) {
     def.object = object;
     def.meshes = [];
-    object.traverse(o => {
+    object.traverse((o) => {
       if (!o.isMesh) return;
       o.material = o.material.clone();
       o.userData.owner = def;
@@ -32,12 +32,19 @@ export class Interactor {
     return def;
   }
 
-  _visible(o) { while (o) { if (!o.visible) return false; o = o.parent; } return true; }
+  _visible(o) {
+    while (o) {
+      if (!o.visible) return false;
+      o = o.parent;
+    }
+    return true;
+  }
 
   pick(raycaster, far = this.ray.far) {
     raycaster.far = far;
     const meshes = [];
-    for (const d of this.items) if ((!d.enabled || d.enabled()) && this._visible(d.object)) meshes.push(...d.meshes);
+    for (const d of this.items)
+      if ((!d.enabled || d.enabled()) && this._visible(d.object)) meshes.push(...d.meshes);
     const hit = raycaster.intersectObjects(meshes, false)[0];
     return hit ? hit.object.userData.owner : null;
   }
@@ -76,7 +83,8 @@ export class Interactor {
       if (hovered && (!d.enabled || d.enabled())) k += 0.12;
       k = Math.min(k, 0.32);
       for (const m of d.meshes) {
-        const mat = m.material, base = m.userData.baseEmissive;
+        const mat = m.material,
+          base = m.userData.baseEmissive;
         if (!mat.emissive || !base) continue;
         mat.emissive.copy(base).lerp(RED, k);
       }

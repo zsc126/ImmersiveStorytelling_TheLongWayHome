@@ -1,6 +1,7 @@
 # The Long Way Home — Nightmare design (research + plan)
 
 ## What the references teach
+
 - **Little Nightmares (Tarsier):** the child's eye-level makes adults wrong — "far too long" arms, huge heads; the player cannot fight back, only hide. The team aimed for "tension, not horror per se" (no gore, few jump scares).
 - **P.T.:** one ordinary hallway repeated with small changes; the familiar turns hostile; repetition reads as a trap/labyrinth.
 - **Hellblade:** binaural voices close to the ear, commenting on what you do; built with voice-hearers' input.
@@ -8,6 +9,7 @@
 - **VR comfort (Meta):** minimise sensory mismatch; be careful with flashing; no forced camera falls/acceleration.
 
 ## Plan
+
 1. **Escape** — police become tall shadow-adults (long arms, no faces). Walls close behind. The market crowd that never looked at you now stands in the lanes and turns its heads to follow you. Whispers: "chor", "Rs 10", "same time tomorrow".
 2. **Your shadow** — the food's glow throws your shadow on the wall; it stops following you, grows into an adult, reaches for you.
 3. **The loop** — one lane repeats three times (P.T.): 2nd time "400 PCS" and cloth scraps cover the walls; 3rd time sewing machines line both walls, running by themselves.
@@ -17,10 +19,12 @@
 VR: the player never falls — the world falls away; no forced camera motion; flashes kept soft.
 
 ## v2.4 — Normal edition: five lanes, five refusals
+
 The ghost machines were too literal and their meaning unclear, so the Normal edition gives
 each lane one refusal, rising in intensity. The theme is despair, with only a little horror.
 
 More references:
+
 - **Little Nightmares, level design:** a threat is shown before it acts. Being caught is
   survivable. Short safe stretches sit between trials.
 - **P.T.:** a familiar space that keeps changing. Atmosphere (light, sound) matters more than
@@ -28,10 +32,10 @@ More references:
 - **VR horror studies:** presence comes from meaningful interaction and spatial sound, not jump
   scares.
 
-The five lanes:
-0. **Doors** — lit doorways ahead, each with a figure standing in it. Every one slams a tin
-   shutter before you reach it: "Go away!", "Not here.", "We don't want trouble." Nobody takes
-   you in.
+The five lanes: 0. **Doors** — lit doorways ahead, each with a figure standing in it. Every one slams a tin
+shutter before you reach it: "Go away!", "Not here.", "We don't want trouble." Nobody takes
+you in.
+
 1. **Hands** — adult arms push out of cracks in the wall and claw at the bag. One catches it:
    "Give it here." Click again and again, or pull the trigger again and again, to pull free.
    If you give up, after 9 s it takes a coin. Everyone takes from you.

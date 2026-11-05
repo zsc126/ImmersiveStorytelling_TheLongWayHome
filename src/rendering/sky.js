@@ -4,9 +4,13 @@ import * as THREE from 'three';
 // No screen-space lens flare, camera shake, or texture downloads.
 export function makeSky(scene, sunDirection) {
   const material = new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, fog: false,
+    side: THREE.BackSide,
+    depthWrite: false,
+    fog: false,
     uniforms: {
-      uTime: { value: 0 }, uDay: { value: 0 }, uBrightness: { value: 0.4 },
+      uTime: { value: 0 },
+      uDay: { value: 0 },
+      uBrightness: { value: 0.4 },
       uSun: { value: sunDirection.clone().normalize() },
     },
     vertexShader: `varying vec3 vDirection;
@@ -49,14 +53,24 @@ export function makeSky(scene, sunDirection) {
       }`,
   });
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(70, 24, 16), material);
-  mesh.renderOrder = -10; mesh.frustumCulled = false; scene.add(mesh);
+  mesh.renderOrder = -10;
+  mesh.frustumCulled = false;
+  scene.add(mesh);
   return {
     update(dt, time, a, center) {
       mesh.position.copy(center);
       const k = 1 - Math.exp(-dt * 0.9);
       material.uniforms.uTime.value = time;
-      material.uniforms.uDay.value = THREE.MathUtils.lerp(material.uniforms.uDay.value, Math.min(1, (a.sun || 0) / 2), k);
-      material.uniforms.uBrightness.value = THREE.MathUtils.lerp(material.uniforms.uBrightness.value, a.sky ?? 1, k);
+      material.uniforms.uDay.value = THREE.MathUtils.lerp(
+        material.uniforms.uDay.value,
+        Math.min(1, (a.sun || 0) / 2),
+        k,
+      );
+      material.uniforms.uBrightness.value = THREE.MathUtils.lerp(
+        material.uniforms.uBrightness.value,
+        a.sky ?? 1,
+        k,
+      );
     },
   };
 }

@@ -11,12 +11,12 @@ All spaces live in one continuous 3D world, so the child walks from one space in
  +──────────────────────────────────────────────────────────────────► x
 ```
 
-| Space | Status | Area | File |
-|---|---|---|---|
-| 1 · The Sweatshop | playable | x −8…8, z −6…6 | `js/spaces/sweatshop.js` |
-| 2 · Street & Market | playable | lane x 8…22 (z 2.4…5.4), market square x 22…40, z −4…12 | `js/spaces/street.js` |
+| Space                 | Status   | Area                                                                      | File                     |
+| --------------------- | -------- | ------------------------------------------------------------------------- | ------------------------ |
+| 1 · The Sweatshop     | playable | x −8…8, z −6…6                                                            | `js/spaces/sweatshop.js` |
+| 2 · Street & Market   | playable | lane x 8…22 (z 2.4…5.4), market square x 22…40, z −4…12                   | `js/spaces/street.js`    |
 | 3 ★ · Nightmare chase | playable | five alleys from the market's east exit to x 82 (see `ROUTE` in the file) | `js/spaces/nightmare.js` |
-| Ending · Home | playable | x 82…88, z 10…15.4 | `js/spaces/home.js` |
+| Ending · Home         | playable | x 82…88, z 10…15.4                                                        | `js/spaces/home.js`      |
 
 ## How spaces connect
 
